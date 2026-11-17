@@ -10,6 +10,8 @@ import pytest
 from custom_components.mcz_maestro import api
 from custom_components.mcz_maestro.protocol import MaestroState
 
+from .helpers import assert_sent
+
 SERIAL = "1234567890123"
 MAC = "0A1B2CA137E0"
 
@@ -106,11 +108,12 @@ async def test_send_spacing_and_debounced_refresh(fake_cloud, http) -> None:
             cloud.send("C|WriteParametri|42|40"),
             cloud.send("C|WriteParametri|36|2"),
         )
-        assert fake_cloud.commands == [
+        await assert_sent(
+            fake_cloud,
             "C|WriteParametri|41|0",
             "C|WriteParametri|42|40",
             "C|WriteParametri|36|2",
-        ]
+        )
         times = fake_cloud.request_times
         assert all(b - a >= 0.18 for a, b in zip(times, times[1:]))
         state = await sink.next_state(3)
