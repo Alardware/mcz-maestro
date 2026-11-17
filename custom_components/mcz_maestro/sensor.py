@@ -32,10 +32,7 @@ ALARM_OPTIONS = ["none", *(code.lower() for code in ALARM_LABELS), "safety"]
 
 
 def _alarm(state: MaestroState) -> str:
-    if not state.is_alarm:
-        return "none"
-    code = state.alarm_code
-    return code.lower() if code else "safety"
+    return state.alarm_key or "none"
 
 
 def _clock(state: MaestroState) -> datetime | None:

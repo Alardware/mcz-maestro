@@ -70,26 +70,27 @@ STATE_KEYS: dict[int, str] = {
     69: "waiting_safety_alarms",
 }
 
-# Alarm descriptions (French, as on the stove display) for events and logs.
+# Alarm descriptions in English, for logs and diagnostics. Text shown to users comes
+# from the integration's translations, in Home Assistant's language.
 ALARM_LABELS: dict[str, str] = {
-    "A01": "Allumage raté",
-    "A02": "Pas de flamme",
-    "A03": "Surchauffe du réservoir",
-    "A04": "Température des fumées trop haute",
-    "A05": "Conduit obstrué ou vent",
-    "A06": "Mauvais tirage",
-    "A09": "Défaut sonde fumées",
-    "A11": "Défaut motoréducteur",
-    "A12": "Défaut contrôleur motoréducteur",
-    "A13": "Température carte mère trop haute",
-    "A14": "Défaut Active",
-    "A17": "Bourrage vis sans fin",
-    "A18": "Température d'eau trop haute",
-    "A19": "Défaut sonde eau",
-    "A20": "Défaut sonde auxiliaire",
-    "A21": "Alarme pressostat",
-    "A22": "Défaut sonde ambiante",
-    "A23": "Défaut fermeture brasero",
+    "A01": "Ignition failed",
+    "A02": "No flame",
+    "A03": "Tank overheating",
+    "A04": "Flue gas too hot",
+    "A05": "Flue obstructed or wind",
+    "A06": "Poor draught",
+    "A09": "Flue gas probe fault",
+    "A11": "Gear motor fault",
+    "A12": "Gear motor controller fault",
+    "A13": "Motherboard too hot",
+    "A14": "Active fault",
+    "A17": "Auger jammed",
+    "A18": "Water too hot",
+    "A19": "Water probe fault",
+    "A20": "Auxiliary probe fault",
+    "A21": "Pressure switch alarm",
+    "A22": "Room probe fault",
+    "A23": "Brazier closing fault",
 }
 
 STATE_OPTIONS: list[str] = list(dict.fromkeys([*STATE_KEYS.values(), "unknown"]))
@@ -200,14 +201,22 @@ class MaestroState:
         return None
 
     @property
+    def alarm_key(self) -> str | None:
+        """Option of the alarm sensor ("a01"..., "safety"), None without alarm."""
+        if not self.is_alarm:
+            return None
+        code = self.alarm_code
+        return code.lower() if code else "safety"
+
+    @property
     def alarm_label(self) -> str | None:
-        """Human readable alarm ("A01 – Allumage raté"), if any."""
+        """Alarm in English ("A01 – Ignition failed"), for logs and diagnostics."""
         if not self.is_alarm:
             return None
         code = self.alarm_code
         if code is None:
-            return "Attente alarmes de sécurité"
-        return f"{code} – {ALARM_LABELS.get(code, 'Alarme')}"
+            return "Waiting for safety alarms"
+        return f"{code} – {ALARM_LABELS.get(code, 'Alarm')}"
 
     @property
     def pellets_empty(self) -> bool | None:

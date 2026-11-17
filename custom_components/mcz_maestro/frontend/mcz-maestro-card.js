@@ -2,7 +2,7 @@
  * mcz-maestro-card — Lovelace card for the MCZ Maestro (legacy app) integration.
  * Vanilla web component, no external dependency. Served by the integration.
  */
-const CARD_VERSION = "0.1.2";
+const CARD_VERSION = "0.1.3";
 const DOMAIN = "mcz_maestro";
 const SCALE_MIN = 10;
 const SCALE_MAX = 30;
@@ -40,6 +40,10 @@ const I18N = {
     raise: "Monter la consigne",
     pick_entity: "Choisis l'entité climate du poêle MCZ Maestro.",
     missing: "Entité introuvable",
+    stove: "Poêle",
+    editor_entity: "Poêle (entité climate)",
+    editor_name: "Nom affiché",
+    card_description: "Poêle à granulés MCZ Maestro (cloud, ancienne appli)",
   },
   en: {
     setpoint: "Setpoint",
@@ -71,6 +75,10 @@ const I18N = {
     raise: "Raise setpoint",
     pick_entity: "Pick the MCZ Maestro stove climate entity.",
     missing: "Entity not found",
+    stove: "Stove",
+    editor_entity: "Stove (climate entity)",
+    editor_name: "Display name",
+    card_description: "MCZ Maestro pellet stove (cloud, legacy app)",
   },
 };
 
@@ -113,6 +121,13 @@ const EMBLEM = `<svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
   <rect class="f" x="21" y="49.5" width="22" height="7.5" rx="3.75"></rect>
   <path class="l" d="M28.5 51.5v3.5M35.5 51.5v3.5" stroke-width="1.4" stroke-linecap="round"></path>
 </svg>`;
+
+/* Text in Home Assistant's language (user profile), English when not translated. */
+const languageOf = (hass) =>
+  (hass?.locale?.language || hass?.language || document.documentElement.lang || navigator.language || "en")
+    .slice(0, 2)
+    .toLowerCase();
+const translate = (lang, key) => (I18N[lang] || I18N.en)[key] ?? I18N.en[key] ?? key;
 
 const icon = (name, cls = "") =>
   `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
@@ -326,8 +341,7 @@ class McZMaestroCard extends HTMLElement {
 
   /* ------------------------------------------------------------- helpers */
   _t(key) {
-    const lang = (this._hass?.locale?.language || this._hass?.language || "fr").slice(0, 2);
-    return (I18N[lang] || I18N.fr)[key] ?? I18N.fr[key] ?? key;
+    return translate(languageOf(this._hass), key);
   }
 
   _resolve() {
@@ -370,7 +384,7 @@ class McZMaestroCard extends HTMLElement {
   }
 
   _num(value, digits = 1) {
-    const lang = this._hass?.locale?.language || "fr";
+    const lang = this._hass?.locale?.language || this._hass?.language || "en";
     return new Intl.NumberFormat(lang, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
   }
 
@@ -483,7 +497,7 @@ class McZMaestroCard extends HTMLElement {
   _render() {
     if (!this._hass || !this._config) return;
     const climate = this._st("climate");
-    const name = this._config.name || climate?.attributes?.friendly_name || "Poêle";
+    const name = this._config.name || climate?.attributes?.friendly_name || this._t("stove");
     if (!climate) {
       this.shadowRoot.innerHTML = `<style>${STYLE}</style><ha-card class="card"><div class="msg">${esc(this._t("missing"))} : ${esc(this._config.entity)}</div></ha-card>`;
       return;
@@ -600,7 +614,8 @@ class McZMaestroCardEditor extends HTMLElement {
     if (!this._hass || !this._config) return;
     if (!this._form) {
       this._form = document.createElement("ha-form");
-      this._form.computeLabel = (s) => ({ entity: "Poêle (climate)", name: "Nom affiché" })[s.name] || s.name;
+      this._form.computeLabel = (s) =>
+        translate(languageOf(this._hass), { entity: "editor_entity", name: "editor_name" }[s.name]) || s.name;
       this._form.addEventListener("value-changed", (ev) => {
         this._config = { ...this._config, ...ev.detail.value };
         this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));
@@ -623,7 +638,7 @@ if (!customElements.get("mcz-maestro-card")) {
   window.customCards.push({
     type: "mcz-maestro-card",
     name: "MCZ Maestro",
-    description: "Poêle à granulés MCZ Maestro (cloud, ancienne appli)",
+    description: translate(languageOf(null), "card_description"),
     preview: true,
     documentationURL: "https://github.com/Alardware/mcz-maestro",
   });

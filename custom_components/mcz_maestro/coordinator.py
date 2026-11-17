@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import MaestroCloud, NotConnected
@@ -63,6 +64,8 @@ class MaestroCoordinator(DataUpdateCoordinator[MaestroState]):
         self._last_frame: float | None = None
         self._last_params_request: float | None = None
         self._last_alarm: int | None = None
+        self._labels: dict[str, str] = {}
+        self._labels_language: str | None = None
 
     # ------------------------------------------------------------- lifecycle
     async def async_start(self) -> None:
@@ -110,17 +113,31 @@ class MaestroCoordinator(DataUpdateCoordinator[MaestroState]):
         if state.state_code == self._last_alarm:
             return
         self._last_alarm = state.state_code
+        _LOGGER.warning("Stove alarm: %s", state.alarm_label)
+        self.config_entry.async_create_background_task(
+            self.hass, self._fire_alarm(state), "mcz_maestro alarm event"
+        )
+
+    async def _alarm_text(self, state: MaestroState) -> str:
+        """Alarm label in Home Assistant's language (English when not translated)."""
+        language = self.hass.config.language
+        if language != self._labels_language:
+            self._labels = await async_get_translations(self.hass, language, "entity", {DOMAIN})
+            self._labels_language = language
+        key = f"component.{DOMAIN}.entity.sensor.alarm.state.{state.alarm_key}"
+        return self._labels.get(key) or state.alarm_label or ""
+
+    async def _fire_alarm(self, state: MaestroState) -> None:
         device = dr.async_get(self.hass).async_get_device(
             identifiers={(DOMAIN, self.config_entry.entry_id)}
         )
-        _LOGGER.warning("Stove alarm: %s", state.alarm_label)
         self.hass.bus.async_fire(
             EVENT_ALARM,
             {
                 "device_id": device.id if device else None,
                 "code": state.alarm_code,
                 "state": state.state_key,
-                "label": state.alarm_label,
+                "label": await self._alarm_text(state),
             },
         )
 

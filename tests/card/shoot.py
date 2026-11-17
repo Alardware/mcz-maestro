@@ -25,7 +25,7 @@ def check(condition: bool, message: str) -> None:
         FAILURES.append(message)
 
 
-def open_card(browser, scenario: str, theme: str = "dark", width: int = 390, wrap: str | None = None):
+def open_card(browser, scenario: str, theme: str = "dark", width: int = 390, wrap: str | None = None, lang: str | None = None):
     page = browser.new_page(viewport={"width": width, "height": 900}, device_scale_factor=2)
     errors: list[str] = []
     page.on("pageerror", lambda e: errors.append(str(e)))
@@ -33,6 +33,8 @@ def open_card(browser, scenario: str, theme: str = "dark", width: int = 390, wra
     url = f"{HARNESS}?scenario={scenario}&theme={theme}"
     if wrap:
         url += f"&wrap={wrap}"
+    if lang:
+        url += f"&lang={lang}"
     page.goto(url)
     page.wait_for_selector("mcz-maestro-card .head")
     page.wait_for_timeout(250)
@@ -139,6 +141,16 @@ def main() -> int:
         check(page.locator(f"{card} .sub").inner_text() == "Poêle injoignable", "offline subtitle")
         check(page.locator(f"{card} .pwr").is_disabled(), "power disabled when unavailable")
         page.close()
+
+        print("language follows Home Assistant")
+        for lang, power, offline in (("fr", "Puissance", "Poêle injoignable"), ("en", "Power", "Stove unreachable"), ("de", "Power", "Stove unreachable")):
+            page, errors = open_card(browser, "dynamic", lang=lang)
+            check(page.locator(f"{card} .row-h b").first.inner_text() == power, f"{lang}: power label '{power}'")
+            check(not errors, f"{lang}: no JS error")
+            page.close()
+            page, _ = open_card(browser, "offline", lang=lang)
+            check(page.locator(f"{card} .sub").inner_text() == offline, f"{lang}: offline text '{offline}'")
+            page.close()
 
         page, _ = open_card(browser, "dynamic")
         stub = page.evaluate("customElements.get('mcz-maestro-card').getStubConfig(window.__hass)")

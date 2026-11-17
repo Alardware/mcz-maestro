@@ -17,7 +17,8 @@ première génération** : ceux qu'on pilote avec l'ancienne appli « MCZ Maestr
 - Aucune dépendance Python externe.
 - Mises à jour en direct (connexion permanente) + rafraîchissement toutes les 30 s.
 - Carte Lovelace incluse (`custom:mcz-maestro-card`), installée automatiquement.
-- Interface en français et en anglais.
+- Suit la langue de Home Assistant : entités, carte et alertes en français ou en anglais
+  (anglais pour les autres langues).
 - Icône propre dans la liste des intégrations (Home Assistant 2026.3+).
 
 Projet communautaire, sans lien avec MCZ.

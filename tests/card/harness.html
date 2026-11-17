@@ -117,8 +117,9 @@ const states = {
 
 window.__calls = [];
 const nf = new Intl.NumberFormat("fr", { maximumFractionDigits: 1 });
+const lang = q.get("lang") || "fr";
 const hass = {
-  states, entities, language: "fr", locale: { language: "fr" },
+  states, entities, language: lang, locale: { language: lang },
   formatEntityState(s) {
     if (LABELS[s.state]) return LABELS[s.state];
     const u = s.attributes?.unit_of_measurement;

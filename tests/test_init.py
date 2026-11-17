@@ -77,7 +77,7 @@ async def test_alarm_event_fired_once_per_alarm(hass: HomeAssistant, fake_cloud)
         "device_id": device.id,
         "code": "A01",
         "state": "alarm_a01",
-        "label": "A01 – Allumage raté",
+        "label": "A01 – Ignition failed",
     }
     await cloud.request_info()
     await asyncio.sleep(0.2)
@@ -90,6 +90,22 @@ async def test_alarm_event_fired_once_per_alarm(hass: HomeAssistant, fake_cloud)
     await cloud.request_info()
     await wait_for(lambda: len(events) == 2)
     assert events[1].data["code"] == "A02"
+
+
+@pytest.mark.parametrize(
+    ("language", "label"),
+    [("fr", "A01 – Allumage raté"), ("en", "A01 – Ignition failed"), ("de", "A01 – Ignition failed")],
+)
+async def test_alarm_label_follows_ha_language(
+    hass: HomeAssistant, fake_cloud, language, label
+) -> None:
+    hass.config.language = language
+    events = async_capture_events(hass, EVENT_ALARM)
+    entry = await setup_integration(hass, fake_cloud)
+    fake_cloud.set_value(1, 50)
+    await entry.runtime_data.cloud.request_info()
+    await wait_for(lambda: len(events) == 1)
+    assert events[0].data["label"] == label
 
 
 async def test_card_registration() -> None:
