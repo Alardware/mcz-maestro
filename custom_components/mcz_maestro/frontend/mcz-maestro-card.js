@@ -2,7 +2,7 @@
  * mcz-maestro-card — Lovelace card for the MCZ Maestro (legacy app) integration.
  * Vanilla web component, no external dependency. Served by the integration.
  */
-const CARD_VERSION = "0.1.0";
+const CARD_VERSION = "0.1.1";
 const DOMAIN = "mcz_maestro";
 const SCALE_MIN = 10;
 const SCALE_MAX = 30;
@@ -100,6 +100,20 @@ const ICONS = {
   plus: '<path d="M6 12h12"/><path d="M12 6v12"/>',
 };
 
+/* Integration emblem: flame over a pellet. Colors come from CSS (on/off states). */
+const EMBLEM = `<svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
+  <defs><linearGradient id="mczTile" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="var(--_heat-1)"></stop><stop offset="1" stop-color="var(--_heat-2)"></stop>
+  </linearGradient></defs>
+  <rect class="t" width="64" height="64" rx="15"></rect>
+  <g class="fl" transform="translate(0 -4)">
+    <path class="f" d="M32 8c2.6 6.2 7.4 9.6 10.6 14.2 2.6 3.7 3.9 7.4 3.9 11.6 0 8.4-6.5 14.2-14.5 14.2S17.5 42.2 17.5 33.8c0-5.2 2.4-9.1 5.6-12.3.4 3 1.7 5.3 3.7 6.6-.6-7.6 1.8-14.5 5.2-20.1z"></path>
+    <path class="i" d="M32.4 28.5c1.3 3.4 5.6 5.4 5.6 10 0 3.6-2.7 6.1-6 6.1s-6-2.4-6-5.9c0-3.4 2.4-5.4 4.1-8.1.4 1.5 1.3 2.4 2.3 2.8-.2-1.8-.3-3.3 0-4.9z"></path>
+  </g>
+  <rect class="f" x="21" y="49.5" width="22" height="7.5" rx="3.75"></rect>
+  <path class="l" d="M28.5 51.5v3.5M35.5 51.5v3.5" stroke-width="1.4" stroke-linecap="round"></path>
+</svg>`;
+
 const icon = (name, cls = "") =>
   `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
 
@@ -169,10 +183,18 @@ button[disabled] { cursor: default; }
 .ic { width: 20px; height: 20px; flex: none; display: block; }
 
 .head { display: flex; align-items: center; gap: 12px; }
-.badge { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: var(--_surface); color: var(--_muted); flex: none; transition: background .3s, color .3s; }
-.badge .ic { width: 22px; height: 22px; }
-.heating .badge { background: linear-gradient(145deg, var(--_heat-1), var(--_heat-2)); color: #fff; box-shadow: 0 6px 18px -6px color-mix(in srgb, var(--_heat-2) 70%, transparent); }
-.heating .badge .ic { animation: flicker 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+.badge { width: 42px; height: 42px; flex: none; }
+.emblem { width: 100%; height: 100%; display: block; }
+.emblem .t { fill: var(--_surface-2); transition: fill .3s; }
+.emblem .f { fill: var(--_muted); transition: fill .3s; }
+.emblem .i { fill: var(--ha-card-background, var(--card-background-color, #1e2d3d)); }
+.emblem .l { stroke: var(--ha-card-background, var(--card-background-color, #1e2d3d)); fill: none; }
+.on .emblem .t { fill: url(#mczTile); }
+.on .emblem .f { fill: #fff; }
+.on .emblem .i { fill: #f2733a; }
+.on .emblem .l { stroke: #f2733a; }
+.heating .badge { filter: drop-shadow(0 6px 12px color-mix(in srgb, var(--_heat-2) 45%, transparent)); }
+.heating .emblem .fl { animation: flicker 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
 .titles { min-width: 0; flex: 1; }
 .name { font-size: 16px; font-weight: 600; letter-spacing: .01em; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sub { font-size: 13px; color: var(--_muted); line-height: 1.3; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -522,7 +544,7 @@ class McZMaestroCard extends HTMLElement {
     this.shadowRoot.innerHTML = `<style>${STYLE}</style>
       <ha-card class="card ${on ? "on" : ""} ${heating ? "heating" : ""} ${unavailable ? "offline" : ""} ${pending ? "pending" : ""}">
         <div class="head">
-          <div class="badge">${icon("flame")}</div>
+          <div class="badge">${EMBLEM}</div>
           <div class="titles"><div class="name">${esc(name)}</div><div class="sub">${esc(subtitle)}</div></div>
           <button class="pwr${this._isBusy("power")}" data-a="power" ${unavailable ? "disabled" : ""}
             aria-label="${esc(this._t(on ? "turn_off" : "turn_on"))}" aria-pressed="${on}">${icon("power")}</button>

@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/emblem.svg" width="112" alt=""></p>
+
 # MCZ Maestro (ancienne appli) pour Home Assistant
 
 Intégration Home Assistant pour les poêles à granulés MCZ équipés du module **Maestro
@@ -12,6 +14,7 @@ première génération** : ceux qu'on pilote avec l'ancienne appli « MCZ Maestr
 - Mises à jour en direct (connexion permanente) + rafraîchissement toutes les 30 s.
 - Carte Lovelace incluse (`custom:mcz-maestro-card`), installée automatiquement.
 - Interface en français et en anglais.
+- Icône propre dans la liste des intégrations (Home Assistant 2026.3+).
 
 Projet communautaire, sans lien avec MCZ.
 
