@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mcz-maestro-card harness</title>
+<style>
+  body { margin: 0; padding: 16px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--page-bg); }
+  body.dark {
+    --page-bg: #0f1923; --card-background-color: #1e2d3d; --ha-card-background: #1e2d3d;
+    --primary-text-color: #e7edf3; --secondary-text-color: #8a9bb0; --primary-color: #c9396d;
+    --divider-color: #2a3b4e; --ha-card-box-shadow: 0 8px 28px -12px rgba(0,0,0,.6);
+  }
+  body.light {
+    --page-bg: #eef2f6; --card-background-color: #ffffff; --ha-card-background: #ffffff;
+    --primary-text-color: #1b2733; --secondary-text-color: #66788a; --primary-color: #c9396d;
+    --divider-color: #e2e8ef; --ha-card-box-shadow: 0 6px 22px -14px rgba(16,32,48,.35);
+  }
+  #wrap { max-width: var(--wrap, 420px); margin: 0 auto; }
+</style>
+<script>
+  // Minimal ha-card, like Home Assistant's.
+  customElements.define("ha-card", class extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" }).innerHTML =
+        '<style>:host{display:block;background:var(--ha-card-background,var(--card-background-color));border-radius:var(--ha-card-border-radius,18px);box-shadow:var(--ha-card-box-shadow,none)}</style><slot></slot>';
+    }
+  });
+</script>
+<script src="../../custom_components/mcz_maestro/frontend/mcz-maestro-card.js"></script>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const scenario = q.get("scenario") || "dynamic";
+document.body.className = q.get("theme") || "dark";
+if (q.get("wrap")) document.getElementById("wrap").style.setProperty("--wrap", q.get("wrap"));
+
+const LABELS = {
+  power_1: "Puissance 1", power_2: "Puissance 2", power_3: "Puissance 3", power_4: "Puissance 4",
+  power_5: "Puissance 5", off: "Éteint", cooling: "Refroidissement", alarm_a01: "Alarme A01 – Allumage raté",
+  none: "Aucune", a01: "A01 – Allumage raté", on: "Activé", unavailable: "Indisponible",
+};
+
+function build(s) {
+  const base = {
+    climate: { state: "heat", attributes: { friendly_name: "Poêle", current_temperature: 18, temperature: 19,
+      preset_mode: "dynamic", hvac_action: "heating", min_temp: 5, max_temp: 35, target_temp_step: 0.5 } },
+    state: "power_5", alarm: "none", alarmOn: "off", heating: "on", cloud: "on",
+    level: "5", fan: { state: "on", attributes: { preset_mode: "auto", percentage: null } },
+    eco: "on", chrono: "on", silent: "off",
+  };
+  if (s === "manual") {
+    base.climate.attributes.preset_mode = "manual";
+    base.climate.attributes.current_temperature = 20.5;
+    base.state = "power_3"; base.level = "3";
+    base.fan = { state: "on", attributes: { preset_mode: null, percentage: 60 } };
+    base.eco = "off";
+  }
+  if (s === "off") {
+    base.climate.state = "off"; base.climate.attributes.hvac_action = "off";
+    base.climate.attributes.current_temperature = 16.5; base.state = "off"; base.heating = "off";
+  }
+  if (s === "alarm") {
+    base.climate.state = "off"; base.climate.attributes.hvac_action = "off";
+    base.state = "alarm_a01"; base.alarm = "a01"; base.alarmOn = "on"; base.heating = "off";
+  }
+  if (s === "offline") { base.climate.state = "unavailable"; base.cloud = "off"; }
+  if (s === "cloud_down") { base.cloud = "off"; }
+  return base;
+}
+
+const d = build(scenario);
+const ent = (id, key) => [id, { entity_id: id, device_id: "dev1", platform: "mcz_maestro", translation_key: key }];
+const entities = Object.fromEntries([
+  ent("climate.poele", "stove"), ent("sensor.poele_etat", "state"), ent("sensor.poele_alarme", "alarm"),
+  ent("sensor.poele_fumees", "fumes_temp"), ent("sensor.poele_vis", "auger_rpm"),
+  ent("sensor.poele_extracteur", "fumes_fan_rpm"), ent("sensor.poele_active", "active_live"),
+  ent("sensor.poele_carte", "board_temp"), ent("sensor.poele_entretien", "hours_to_service"),
+  ent("sensor.poele_total", "total_hours"), ent("sensor.poele_allumages", "ignitions"),
+  ent("sensor.poele_puissance_actuelle", "power"), ent("binary_sensor.poele_alarme", "alarm"),
+  ent("binary_sensor.poele_en_chauffe", "heating"), ent("binary_sensor.poele_cloud", "cloud"),
+  ent("select.poele_puissance", "power_level"), ent("fan.poele_ventilateur", "room_fan"),
+  ent("switch.poele_eco", "eco"), ent("switch.poele_chrono", "chrono"), ent("switch.poele_silence", "silent"),
+  ent("button.poele_reset", "reset_alarm"),
+  ["light.salon", { entity_id: "light.salon", device_id: "dev2", platform: "hue" }],
+]);
+const st = (state, attributes = {}) => ({ state, attributes, last_updated: "2026-11-17T06:00:00" });
+const unit = (state, u) => st(state, { unit_of_measurement: u });
+const offline = d.climate.state === "unavailable";
+const maybe = (s) => (offline ? st("unavailable") : s);
+const states = {
+  "climate.poele": st(d.climate.state, d.climate.attributes),
+  "sensor.poele_etat": maybe(st(d.state)),
+  "sensor.poele_alarme": maybe(st(d.alarm)),
+  "sensor.poele_fumees": maybe(unit("120", "°C")),
+  "sensor.poele_vis": maybe(unit("1350", "rpm")),
+  "sensor.poele_extracteur": maybe(unit("1886", "rpm")),
+  "sensor.poele_active": maybe(st("166")),
+  "sensor.poele_carte": maybe(unit("23.0", "°C")),
+  "sensor.poele_entretien": maybe(unit("660", "h")),
+  "sensor.poele_total": maybe(unit("18000", "h")),
+  "sensor.poele_allumages": maybe(st("1234")),
+  "sensor.poele_puissance_actuelle": maybe(st(d.level)),
+  "binary_sensor.poele_alarme": maybe(st(d.alarmOn)),
+  "binary_sensor.poele_en_chauffe": maybe(st(d.heating)),
+  "binary_sensor.poele_cloud": st(d.cloud),
+  "select.poele_puissance": maybe(st(d.level)),
+  "fan.poele_ventilateur": maybe(st(d.fan.state, d.fan.attributes)),
+  "switch.poele_eco": maybe(st(d.eco)),
+  "switch.poele_chrono": maybe(st(d.chrono)),
+  "switch.poele_silence": maybe(st(d.silent)),
+  "button.poele_reset": st("unknown"),
+};
+
+window.__calls = [];
+const nf = new Intl.NumberFormat("fr", { maximumFractionDigits: 1 });
+const hass = {
+  states, entities, language: "fr", locale: { language: "fr" },
+  formatEntityState(s) {
+    if (LABELS[s.state]) return LABELS[s.state];
+    const u = s.attributes?.unit_of_measurement;
+    const n = Number(s.state);
+    const v = Number.isNaN(n) ? s.state : nf.format(n);
+    return u ? `${v} ${u}` : v;
+  },
+  callService(domain, service, data) { window.__calls.push([domain, service, data]); return Promise.resolve(); },
+};
+
+const card = document.createElement("mcz-maestro-card");
+card.setConfig({ entity: "climate.poele" });
+card.hass = hass;
+document.getElementById("wrap").appendChild(card);
+window.__hass = hass;
+window.__card = card;
+</script>
+</body>
+</html>
