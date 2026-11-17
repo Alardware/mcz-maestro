@@ -2,6 +2,10 @@
 
 # MCZ Maestro (ancienne appli) pour Home Assistant
 
+[![CI](https://github.com/Alardware/mcz-maestro/actions/workflows/validate.yml/badge.svg)](https://github.com/Alardware/mcz-maestro/actions)
+[![HACS](https://img.shields.io/badge/HACS-dépôt%20personnalisé-41bdf5)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-soutenir%20le%20projet-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/alardware)
+
 Intégration Home Assistant pour les poêles à granulés MCZ équipés du module **Maestro
 première génération** : ceux qu'on pilote avec l'ancienne appli « MCZ Maestro », appairée par
 **numéro de série + adresse MAC remote**.
@@ -114,6 +118,13 @@ python tools/gen_translations.py         # régénère strings.json / en.json / 
 Le protocole (socket.io sur `app.mcz.it:9000`, trames `C|RecuperoInfo`,
 `C|WriteParametri|id|valeur`) est documenté par la communauté Jeedom / openHAB ;
 le code de ce dépôt est une réécriture indépendante.
+
+## Soutenir
+
+Cette intégration est développée sur mon temps libre. Si elle vous est utile, un café
+aide à la faire vivre :
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alardware)
 
 ## Licence
 
