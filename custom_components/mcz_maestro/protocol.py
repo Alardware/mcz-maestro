@@ -70,6 +70,28 @@ STATE_KEYS: dict[int, str] = {
     69: "waiting_safety_alarms",
 }
 
+# Alarm descriptions (French, as on the stove display) for events and logs.
+ALARM_LABELS: dict[str, str] = {
+    "A01": "Allumage raté",
+    "A02": "Pas de flamme",
+    "A03": "Surchauffe du réservoir",
+    "A04": "Température des fumées trop haute",
+    "A05": "Conduit obstrué ou vent",
+    "A06": "Mauvais tirage",
+    "A09": "Défaut sonde fumées",
+    "A11": "Défaut motoréducteur",
+    "A12": "Défaut contrôleur motoréducteur",
+    "A13": "Température carte mère trop haute",
+    "A14": "Défaut Active",
+    "A17": "Bourrage vis sans fin",
+    "A18": "Température d'eau trop haute",
+    "A19": "Défaut sonde eau",
+    "A20": "Défaut sonde auxiliaire",
+    "A21": "Alarme pressostat",
+    "A22": "Défaut sonde ambiante",
+    "A23": "Défaut fermeture brasero",
+}
+
 STATE_OPTIONS: list[str] = list(dict.fromkeys([*STATE_KEYS.values(), "unknown"]))
 
 # Running (thermostat "heat" mode): ignition, power levels, on, periodic
@@ -176,6 +198,16 @@ class MaestroState:
         if key.startswith("alarm_"):
             return key.removeprefix("alarm_").upper()
         return None
+
+    @property
+    def alarm_label(self) -> str | None:
+        """Human readable alarm ("A01 – Allumage raté"), if any."""
+        if not self.is_alarm:
+            return None
+        code = self.alarm_code
+        if code is None:
+            return "Attente alarmes de sécurité"
+        return f"{code} – {ALARM_LABELS.get(code, 'Alarme')}"
 
     @property
     def pellets_empty(self) -> bool | None:

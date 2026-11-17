@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Poêle MCZ Maestro",
+        "description": "Poêle appairé avec l'ancienne appli MCZ Maestro (numéro de série + adresse MAC remote). Les deux sont visibles dans l'appli, menu Liste des dispositifs.",
+        "data": {
+          "name": "Nom",
+          "serial": "Numéro de série",
+          "mac": "Adresse MAC remote"
+        },
+        "data_description": {
+          "serial": "13 chiffres, ex. 1234567890123.",
+          "mac": "12 caractères hexadécimaux, avec ou sans « : »."
+        }
+      },
+      "reconfigure": {
+        "title": "Changer l'adresse MAC remote",
+        "data": {
+          "mac": "Adresse MAC remote"
+        }
+      }
+    },
+    "error": {
+      "invalid_serial": "Numéro de série invalide.",
+      "invalid_mac": "Adresse MAC invalide (12 caractères hexadécimaux).",
+      "cannot_connect": "Impossible de joindre le cloud MCZ.",
+      "no_response": "Le cloud MCZ répond mais pas le poêle : vérifie qu'il est en ligne et le couple série/MAC.",
+      "unknown": "Erreur inattendue, voir les journaux."
+    },
+    "abort": {
+      "already_configured": "Ce poêle est déjà configuré.",
+      "reconfigure_successful": "Adresse MAC mise à jour."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Intervalle de rafraîchissement (s)"
+        },
+        "data_description": {
+          "scan_interval": "Fréquence de demande de nouvelles données au poêle (15–300 s)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "stove": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "dynamic": "Dynamic",
+              "manual": "Manuel"
+            }
+          }
+        }
+      }
+    },
+    "fan": {
+      "room_fan": {
+        "name": "Ventilateur ambiance",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "auto": "Auto"
+            }
+          }
+        }
+      }
+    },
+    "select": {
+      "power_level": {
+        "name": "Puissance"
+      }
+    },
+    "switch": {
+      "eco": {
+        "name": "Eco Stop"
+      },
+      "chrono": {
+        "name": "Chrono"
+      },
+      "silent": {
+        "name": "Silence"
+      },
+      "active": {
+        "name": "Active"
+      },
+      "sounds": {
+        "name": "Sons"
+      }
+    },
+    "sensor": {
+      "state": {
+        "name": "État",
+        "state": {
+          "off": "Éteint",
+          "checking": "Contrôle chaud/froid",
+          "cleaning_cold": "Nettoyage à froid",
+          "loading_cold": "Chargement à froid",
+          "start_1_cold": "Démarrage 1 à froid",
+          "start_2_cold": "Démarrage 2 à froid",
+          "cleaning_hot": "Nettoyage à chaud",
+          "loading_hot": "Chargement à chaud",
+          "start_1_hot": "Démarrage 1 à chaud",
+          "start_2_hot": "Démarrage 2 à chaud",
+          "stabilising": "Stabilisation",
+          "power_1": "Puissance 1",
+          "power_2": "Puissance 2",
+          "power_3": "Puissance 3",
+          "power_4": "Puissance 4",
+          "power_5": "Puissance 5",
+          "diagnostics": "Diagnostic",
+          "on": "Allumé",
+          "extinguishing": "Extinction",
+          "cooling": "Refroidissement",
+          "cleaning_low": "Nettoyage basse pression",
+          "cleaning_high": "Nettoyage haute pression",
+          "unlocking_auger": "Déblocage vis sans fin",
+          "auto_eco": "Auto Éco",
+          "standby": "Veille",
+          "loading_auger": "Chargement vis sans fin",
+          "waiting_safety_alarms": "Attente alarmes de sécurité",
+          "unknown": "Inconnu",
+          "alarm_a01": "Alarme A01 – Allumage raté",
+          "alarm_a02": "Alarme A02 – Pas de flamme",
+          "alarm_a03": "Alarme A03 – Surchauffe du réservoir",
+          "alarm_a04": "Alarme A04 – Température des fumées trop haute",
+          "alarm_a05": "Alarme A05 – Conduit obstrué ou vent",
+          "alarm_a06": "Alarme A06 – Mauvais tirage",
+          "alarm_a09": "Alarme A09 – Défaut sonde fumées",
+          "alarm_a11": "Alarme A11 – Défaut motoréducteur",
+          "alarm_a12": "Alarme A12 – Défaut contrôleur motoréducteur",
+          "alarm_a13": "Alarme A13 – Température carte mère trop haute",
+          "alarm_a14": "Alarme A14 – Défaut Active",
+          "alarm_a17": "Alarme A17 – Bourrage vis sans fin",
+          "alarm_a18": "Alarme A18 – Température d'eau trop haute",
+          "alarm_a19": "Alarme A19 – Défaut sonde eau",
+          "alarm_a20": "Alarme A20 – Défaut sonde auxiliaire",
+          "alarm_a21": "Alarme A21 – Alarme pressostat",
+          "alarm_a22": "Alarme A22 – Défaut sonde ambiante",
+          "alarm_a23": "Alarme A23 – Défaut fermeture brasero"
+        }
+      },
+      "alarm": {
+        "name": "Alarme",
+        "state": {
+          "none": "Aucune",
+          "safety": "Attente alarmes de sécurité",
+          "a01": "A01 – Allumage raté",
+          "a02": "A02 – Pas de flamme",
+          "a03": "A03 – Surchauffe du réservoir",
+          "a04": "A04 – Température des fumées trop haute",
+          "a05": "A05 – Conduit obstrué ou vent",
+          "a06": "A06 – Mauvais tirage",
+          "a09": "A09 – Défaut sonde fumées",
+          "a11": "A11 – Défaut motoréducteur",
+          "a12": "A12 – Défaut contrôleur motoréducteur",
+          "a13": "A13 – Température carte mère trop haute",
+          "a14": "A14 – Défaut Active",
+          "a17": "A17 – Bourrage vis sans fin",
+          "a18": "A18 – Température d'eau trop haute",
+          "a19": "A19 – Défaut sonde eau",
+          "a20": "A20 – Défaut sonde auxiliaire",
+          "a21": "A21 – Alarme pressostat",
+          "a22": "A22 – Défaut sonde ambiante",
+          "a23": "A23 – Défaut fermeture brasero"
+        }
+      },
+      "ambient_temp": {
+        "name": "Température ambiante"
+      },
+      "fumes_temp": {
+        "name": "Température des fumées"
+      },
+      "setpoint": {
+        "name": "Consigne"
+      },
+      "board_temp": {
+        "name": "Température carte mère"
+      },
+      "power": {
+        "name": "Puissance actuelle"
+      },
+      "fumes_fan_rpm": {
+        "name": "Vitesse extracteur fumées"
+      },
+      "auger_rpm": {
+        "name": "Vis sans fin"
+      },
+      "auger_rpm_set": {
+        "name": "Vis sans fin consigne"
+      },
+      "active_live": {
+        "name": "Active"
+      },
+      "active_set": {
+        "name": "Active consigne"
+      },
+      "hours_to_service": {
+        "name": "Heures avant entretien"
+      },
+      "total_hours": {
+        "name": "Temps de fonctionnement"
+      },
+      "power_1_hours": {
+        "name": "Temps en puissance 1"
+      },
+      "power_2_hours": {
+        "name": "Temps en puissance 2"
+      },
+      "power_3_hours": {
+        "name": "Temps en puissance 3"
+      },
+      "power_4_hours": {
+        "name": "Temps en puissance 4"
+      },
+      "power_5_hours": {
+        "name": "Temps en puissance 5"
+      },
+      "minutes_to_off": {
+        "name": "Minutes avant extinction"
+      },
+      "ignitions": {
+        "name": "Allumages"
+      },
+      "season": {
+        "name": "Saison",
+        "state": {
+          "winter": "Hiver",
+          "summer": "Été"
+        }
+      },
+      "stove_clock": {
+        "name": "Horloge du poêle"
+      },
+      "profile": {
+        "name": "Profil (brut)"
+      },
+      "antifreeze": {
+        "name": "Hors-gel (brut)"
+      }
+    },
+    "binary_sensor": {
+      "heating": {
+        "name": "En chauffe"
+      },
+      "alarm": {
+        "name": "Alarme"
+      },
+      "igniter": {
+        "name": "Bougie"
+      },
+      "brazier": {
+        "name": "Brasero à nettoyer"
+      },
+      "pellets_empty": {
+        "name": "Granulés vides"
+      },
+      "cloud": {
+        "name": "Cloud MCZ"
+      }
+    },
+    "button": {
+      "reset_alarm": {
+        "name": "Réinitialiser l'alarme"
+      },
+      "sync_clock": {
+        "name": "Mettre le poêle à l'heure"
+      },
+      "refresh": {
+        "name": "Rafraîchir"
+      }
+    }
+  },
+  "exceptions": {
+    "not_connected": {
+      "message": "Cloud MCZ non connecté, réessaie dans un instant."
+    },
+    "no_first_frame": {
+      "message": "Le poêle n'a pas répondu via le cloud MCZ."
+    },
+    "stale": {
+      "message": "Aucune donnée du poêle depuis {seconds} s."
+    }
+  }
+}

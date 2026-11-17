@@ -11,6 +11,8 @@ MODEL: Final = "Maestro"
 CONF_SERIAL: Final = "serial"
 CONF_MAC: Final = "mac"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
+# Internal override of the cloud URL (tests); never asked in the UI.
+CONF_URL: Final = "url"
 
 DEFAULT_NAME: Final = "Poêle"
 DEFAULT_URL: Final = "http://app.mcz.it:9000"
@@ -20,6 +22,8 @@ MAX_SCAN_INTERVAL: Final = 300
 
 # A frame older than this makes every entity unavailable.
 STALE_AFTER: Final = 180
+# How long the config flow waits for the stove to answer.
+VALIDATE_TIMEOUT: Final = 20
 # How long setup waits for the first info frame before retrying later.
 FIRST_FRAME_TIMEOUT: Final = 30
 # Parameters frame ("00") refresh period, kept raw for diagnostics.

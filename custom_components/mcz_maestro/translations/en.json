@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MCZ Maestro stove",
+        "description": "Stove paired with the legacy MCZ Maestro app (serial number + remote MAC address). Both are shown in the app under Device list.",
+        "data": {
+          "name": "Name",
+          "serial": "Serial number",
+          "mac": "Remote MAC address"
+        },
+        "data_description": {
+          "serial": "13 digits, e.g. 1234567890123.",
+          "mac": "12 hex characters, with or without colons."
+        }
+      },
+      "reconfigure": {
+        "title": "Change remote MAC address",
+        "data": {
+          "mac": "Remote MAC address"
+        }
+      }
+    },
+    "error": {
+      "invalid_serial": "Invalid serial number.",
+      "invalid_mac": "Invalid MAC address (12 hex characters).",
+      "cannot_connect": "Cannot reach the MCZ cloud.",
+      "no_response": "The MCZ cloud answered but the stove did not: check it is online and the serial/MAC pair.",
+      "unknown": "Unexpected error, see the logs."
+    },
+    "abort": {
+      "already_configured": "This stove is already configured.",
+      "reconfigure_successful": "MAC address updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Refresh interval (s)"
+        },
+        "data_description": {
+          "scan_interval": "How often the stove is asked for fresh data (15–300 s)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "stove": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "dynamic": "Dynamic",
+              "manual": "Manual"
+            }
+          }
+        }
+      }
+    },
+    "fan": {
+      "room_fan": {
+        "name": "Room fan",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "auto": "Auto"
+            }
+          }
+        }
+      }
+    },
+    "select": {
+      "power_level": {
+        "name": "Power level"
+      }
+    },
+    "switch": {
+      "eco": {
+        "name": "Eco Stop"
+      },
+      "chrono": {
+        "name": "Chrono"
+      },
+      "silent": {
+        "name": "Silent"
+      },
+      "active": {
+        "name": "Active"
+      },
+      "sounds": {
+        "name": "Sounds"
+      }
+    },
+    "sensor": {
+      "state": {
+        "name": "State",
+        "state": {
+          "off": "Off",
+          "checking": "Checking hot/cold",
+          "cleaning_cold": "Cleaning (cold)",
+          "loading_cold": "Loading pellets (cold)",
+          "start_1_cold": "Start 1 (cold)",
+          "start_2_cold": "Start 2 (cold)",
+          "cleaning_hot": "Cleaning (hot)",
+          "loading_hot": "Loading pellets (hot)",
+          "start_1_hot": "Start 1 (hot)",
+          "start_2_hot": "Start 2 (hot)",
+          "stabilising": "Stabilising",
+          "power_1": "Power 1",
+          "power_2": "Power 2",
+          "power_3": "Power 3",
+          "power_4": "Power 4",
+          "power_5": "Power 5",
+          "diagnostics": "Diagnostics",
+          "on": "On",
+          "extinguishing": "Extinguishing",
+          "cooling": "Cooling down",
+          "cleaning_low": "Cleaning (low pressure)",
+          "cleaning_high": "Cleaning (high pressure)",
+          "unlocking_auger": "Unlocking auger",
+          "auto_eco": "Auto Eco",
+          "standby": "Standby",
+          "loading_auger": "Loading auger",
+          "waiting_safety_alarms": "Waiting for safety alarms",
+          "unknown": "Unknown",
+          "alarm_a01": "Alarm A01 – Ignition failed",
+          "alarm_a02": "Alarm A02 – No flame",
+          "alarm_a03": "Alarm A03 – Tank overheating",
+          "alarm_a04": "Alarm A04 – Flue gas too hot",
+          "alarm_a05": "Alarm A05 – Flue obstructed or wind",
+          "alarm_a06": "Alarm A06 – Poor draught",
+          "alarm_a09": "Alarm A09 – Flue gas probe fault",
+          "alarm_a11": "Alarm A11 – Gear motor fault",
+          "alarm_a12": "Alarm A12 – Gear motor controller fault",
+          "alarm_a13": "Alarm A13 – Motherboard too hot",
+          "alarm_a14": "Alarm A14 – Active fault",
+          "alarm_a17": "Alarm A17 – Auger jammed",
+          "alarm_a18": "Alarm A18 – Water too hot",
+          "alarm_a19": "Alarm A19 – Water probe fault",
+          "alarm_a20": "Alarm A20 – Auxiliary probe fault",
+          "alarm_a21": "Alarm A21 – Pressure switch alarm",
+          "alarm_a22": "Alarm A22 – Room probe fault",
+          "alarm_a23": "Alarm A23 – Brazier closing fault"
+        }
+      },
+      "alarm": {
+        "name": "Alarm",
+        "state": {
+          "none": "None",
+          "safety": "Waiting for safety alarms",
+          "a01": "A01 – Ignition failed",
+          "a02": "A02 – No flame",
+          "a03": "A03 – Tank overheating",
+          "a04": "A04 – Flue gas too hot",
+          "a05": "A05 – Flue obstructed or wind",
+          "a06": "A06 – Poor draught",
+          "a09": "A09 – Flue gas probe fault",
+          "a11": "A11 – Gear motor fault",
+          "a12": "A12 – Gear motor controller fault",
+          "a13": "A13 – Motherboard too hot",
+          "a14": "A14 – Active fault",
+          "a17": "A17 – Auger jammed",
+          "a18": "A18 – Water too hot",
+          "a19": "A19 – Water probe fault",
+          "a20": "A20 – Auxiliary probe fault",
+          "a21": "A21 – Pressure switch alarm",
+          "a22": "A22 – Room probe fault",
+          "a23": "A23 – Brazier closing fault"
+        }
+      },
+      "ambient_temp": {
+        "name": "Room temperature"
+      },
+      "fumes_temp": {
+        "name": "Flue gas temperature"
+      },
+      "setpoint": {
+        "name": "Setpoint"
+      },
+      "board_temp": {
+        "name": "Motherboard temperature"
+      },
+      "power": {
+        "name": "Current power"
+      },
+      "fumes_fan_rpm": {
+        "name": "Flue fan speed"
+      },
+      "auger_rpm": {
+        "name": "Auger speed"
+      },
+      "auger_rpm_set": {
+        "name": "Auger speed setpoint"
+      },
+      "active_live": {
+        "name": "Active"
+      },
+      "active_set": {
+        "name": "Active setpoint"
+      },
+      "hours_to_service": {
+        "name": "Hours before service"
+      },
+      "total_hours": {
+        "name": "Operating time"
+      },
+      "power_1_hours": {
+        "name": "Operating time power 1"
+      },
+      "power_2_hours": {
+        "name": "Operating time power 2"
+      },
+      "power_3_hours": {
+        "name": "Operating time power 3"
+      },
+      "power_4_hours": {
+        "name": "Operating time power 4"
+      },
+      "power_5_hours": {
+        "name": "Operating time power 5"
+      },
+      "minutes_to_off": {
+        "name": "Minutes before shutdown"
+      },
+      "ignitions": {
+        "name": "Ignitions"
+      },
+      "season": {
+        "name": "Season",
+        "state": {
+          "winter": "Winter",
+          "summer": "Summer"
+        }
+      },
+      "stove_clock": {
+        "name": "Stove clock"
+      },
+      "profile": {
+        "name": "Profile (raw)"
+      },
+      "antifreeze": {
+        "name": "Frost protection (raw)"
+      }
+    },
+    "binary_sensor": {
+      "heating": {
+        "name": "Heating"
+      },
+      "alarm": {
+        "name": "Alarm"
+      },
+      "igniter": {
+        "name": "Igniter"
+      },
+      "brazier": {
+        "name": "Brazier to clean"
+      },
+      "pellets_empty": {
+        "name": "Pellets empty"
+      },
+      "cloud": {
+        "name": "MCZ cloud"
+      }
+    },
+    "button": {
+      "reset_alarm": {
+        "name": "Reset alarm"
+      },
+      "sync_clock": {
+        "name": "Sync stove clock"
+      },
+      "refresh": {
+        "name": "Refresh"
+      }
+    }
+  },
+  "exceptions": {
+    "not_connected": {
+      "message": "MCZ cloud not connected, try again shortly."
+    },
+    "no_first_frame": {
+      "message": "The stove did not answer through the MCZ cloud."
+    },
+    "stale": {
+      "message": "No data from the stove for {seconds} s."
+    }
+  }
+}
