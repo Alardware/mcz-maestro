@@ -117,7 +117,7 @@ Alarmes : 50 A01 allumage raté · 51 A02 pas de flamme · 52 A03 surchauffe ré
 63 A21 pressostat · 64 A22 sonde ambiante · 65 A23 fermeture brasero ·
 66 A12 contrôleur motoréducteur · 67 A17 bourrage vis sans fin.
 
-« En marche » = états 1–15, 31, 40–43. « En chauffe » = 10–15, 31.
+« En marche » (thermostat HEAT) = états 1–15, 31, 42–46, 49. « En chauffe » = 1–15, 31 (allumage compris). Extinction (40) et refroidissement (41) = arrêt.
 
 ## 4. Architecture
 
