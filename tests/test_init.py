@@ -94,7 +94,13 @@ async def test_alarm_event_fired_once_per_alarm(hass: HomeAssistant, fake_cloud)
 
 @pytest.mark.parametrize(
     ("language", "label"),
-    [("fr", "A01 – Allumage raté"), ("en", "A01 – Ignition failed"), ("de", "A01 – Ignition failed")],
+    [
+        ("fr", "A01 – Allumage raté"),
+        ("en", "A01 – Ignition failed"),
+        ("it", "A01 – Accensione fallita"),
+        ("de", "A01 – Zündung fehlgeschlagen"),
+        ("es", "A01 – Ignition failed"),
+    ],
 )
 async def test_alarm_label_follows_ha_language(
     hass: HomeAssistant, fake_cloud, language, label

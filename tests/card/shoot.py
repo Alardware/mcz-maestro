@@ -143,7 +143,13 @@ def main() -> int:
         page.close()
 
         print("language follows Home Assistant")
-        for lang, power, offline in (("fr", "Puissance", "Poêle injoignable"), ("en", "Power", "Stove unreachable"), ("de", "Power", "Stove unreachable")):
+        for lang, power, offline in (
+            ("fr", "Puissance", "Poêle injoignable"),
+            ("en", "Power", "Stove unreachable"),
+            ("it", "Potenza", "Stufa non raggiungibile"),
+            ("de", "Leistung", "Ofen nicht erreichbar"),
+            ("es", "Power", "Stove unreachable"),
+        ):
             page, errors = open_card(browser, "dynamic", lang=lang)
             check(page.locator(f"{card} .row-h b").first.inner_text() == power, f"{lang}: power label '{power}'")
             check(not errors, f"{lang}: no JS error")

@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Stufa MCZ Maestro",
+        "description": "Stufa abbinata alla vecchia app MCZ Maestro (numero di serie + indirizzo MAC remote). Entrambi sono visibili nell'app, menu Lista dispositivi.",
+        "data": {
+          "name": "Nome",
+          "serial": "Numero di serie",
+          "mac": "Indirizzo MAC remote"
+        },
+        "data_description": {
+          "serial": "Sulla targhetta della stufa o nell'app.",
+          "mac": "12 caratteri esadecimali, con o senza « : »."
+        }
+      },
+      "reconfigure": {
+        "title": "Modifica indirizzo MAC remote",
+        "data": {
+          "mac": "Indirizzo MAC remote"
+        }
+      }
+    },
+    "error": {
+      "invalid_serial": "Numero di serie non valido.",
+      "invalid_mac": "Indirizzo MAC non valido (12 caratteri esadecimali).",
+      "cannot_connect": "Impossibile raggiungere il cloud MCZ.",
+      "no_response": "Il cloud MCZ risponde ma la stufa no: verifica che sia online e la coppia seriale/MAC.",
+      "unknown": "Errore imprevisto, vedi i log."
+    },
+    "abort": {
+      "already_configured": "Questa stufa è già configurata.",
+      "reconfigure_successful": "Indirizzo MAC aggiornato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni",
+        "data": {
+          "scan_interval": "Intervallo di aggiornamento (s)"
+        },
+        "data_description": {
+          "scan_interval": "Frequenza con cui si chiedono nuovi dati alla stufa (15–300 s)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "stove": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "dynamic": "Dynamic",
+              "manual": "Manuale"
+            }
+          }
+        }
+      }
+    },
+    "fan": {
+      "room_fan": {
+        "name": "Ventilatore ambiente",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "auto": "Auto"
+            }
+          }
+        }
+      }
+    },
+    "select": {
+      "power_level": {
+        "name": "Potenza"
+      }
+    },
+    "switch": {
+      "eco": {
+        "name": "Eco Stop"
+      },
+      "chrono": {
+        "name": "Chrono"
+      },
+      "silent": {
+        "name": "Silenzioso"
+      },
+      "active": {
+        "name": "Active"
+      },
+      "sounds": {
+        "name": "Suoni"
+      }
+    },
+    "sensor": {
+      "state": {
+        "name": "Stato",
+        "state": {
+          "off": "Spenta",
+          "checking": "Controllo caldo/freddo",
+          "cleaning_cold": "Pulizia a freddo",
+          "loading_cold": "Carico pellet a freddo",
+          "start_1_cold": "Avvio 1 a freddo",
+          "start_2_cold": "Avvio 2 a freddo",
+          "cleaning_hot": "Pulizia a caldo",
+          "loading_hot": "Carico pellet a caldo",
+          "start_1_hot": "Avvio 1 a caldo",
+          "start_2_hot": "Avvio 2 a caldo",
+          "stabilising": "Stabilizzazione",
+          "power_1": "Potenza 1",
+          "power_2": "Potenza 2",
+          "power_3": "Potenza 3",
+          "power_4": "Potenza 4",
+          "power_5": "Potenza 5",
+          "diagnostics": "Diagnostica",
+          "on": "Accesa",
+          "extinguishing": "Spegnimento",
+          "cooling": "Raffreddamento",
+          "cleaning_low": "Pulizia bassa pressione",
+          "cleaning_high": "Pulizia alta pressione",
+          "unlocking_auger": "Sblocco coclea",
+          "auto_eco": "Auto Eco",
+          "standby": "Standby",
+          "loading_auger": "Carico coclea",
+          "waiting_safety_alarms": "Attesa allarmi di sicurezza",
+          "unknown": "Sconosciuto",
+          "alarm_a01": "Allarme A01 – Accensione fallita",
+          "alarm_a02": "Allarme A02 – Assenza fiamma",
+          "alarm_a03": "Allarme A03 – Surriscaldamento serbatoio",
+          "alarm_a04": "Allarme A04 – Temperatura fumi elevata",
+          "alarm_a05": "Allarme A05 – Canna fumaria ostruita o vento",
+          "alarm_a06": "Allarme A06 – Tiraggio insufficiente",
+          "alarm_a09": "Allarme A09 – Guasto sonda fumi",
+          "alarm_a11": "Allarme A11 – Guasto motoriduttore",
+          "alarm_a12": "Allarme A12 – Guasto controllo motoriduttore",
+          "alarm_a13": "Allarme A13 – Temperatura scheda elevata",
+          "alarm_a14": "Allarme A14 – Guasto Active",
+          "alarm_a17": "Allarme A17 – Coclea bloccata",
+          "alarm_a18": "Allarme A18 – Temperatura acqua elevata",
+          "alarm_a19": "Allarme A19 – Guasto sonda acqua",
+          "alarm_a20": "Allarme A20 – Guasto sonda ausiliaria",
+          "alarm_a21": "Allarme A21 – Allarme pressostato",
+          "alarm_a22": "Allarme A22 – Guasto sonda ambiente",
+          "alarm_a23": "Allarme A23 – Guasto chiusura braciere"
+        }
+      },
+      "alarm": {
+        "name": "Allarme",
+        "state": {
+          "none": "Nessuno",
+          "safety": "Attesa allarmi di sicurezza",
+          "a01": "A01 – Accensione fallita",
+          "a02": "A02 – Assenza fiamma",
+          "a03": "A03 – Surriscaldamento serbatoio",
+          "a04": "A04 – Temperatura fumi elevata",
+          "a05": "A05 – Canna fumaria ostruita o vento",
+          "a06": "A06 – Tiraggio insufficiente",
+          "a09": "A09 – Guasto sonda fumi",
+          "a11": "A11 – Guasto motoriduttore",
+          "a12": "A12 – Guasto controllo motoriduttore",
+          "a13": "A13 – Temperatura scheda elevata",
+          "a14": "A14 – Guasto Active",
+          "a17": "A17 – Coclea bloccata",
+          "a18": "A18 – Temperatura acqua elevata",
+          "a19": "A19 – Guasto sonda acqua",
+          "a20": "A20 – Guasto sonda ausiliaria",
+          "a21": "A21 – Allarme pressostato",
+          "a22": "A22 – Guasto sonda ambiente",
+          "a23": "A23 – Guasto chiusura braciere"
+        }
+      },
+      "ambient_temp": {
+        "name": "Temperatura ambiente"
+      },
+      "fumes_temp": {
+        "name": "Temperatura fumi"
+      },
+      "setpoint": {
+        "name": "Temperatura impostata"
+      },
+      "board_temp": {
+        "name": "Temperatura scheda"
+      },
+      "power": {
+        "name": "Potenza attuale"
+      },
+      "fumes_fan_rpm": {
+        "name": "Velocità estrattore fumi"
+      },
+      "auger_rpm": {
+        "name": "Coclea"
+      },
+      "auger_rpm_set": {
+        "name": "Coclea impostata"
+      },
+      "active_live": {
+        "name": "Active"
+      },
+      "active_set": {
+        "name": "Active impostato"
+      },
+      "hours_to_service": {
+        "name": "Ore alla manutenzione"
+      },
+      "total_hours": {
+        "name": "Ore di funzionamento"
+      },
+      "power_1_hours": {
+        "name": "Ore in potenza 1"
+      },
+      "power_2_hours": {
+        "name": "Ore in potenza 2"
+      },
+      "power_3_hours": {
+        "name": "Ore in potenza 3"
+      },
+      "power_4_hours": {
+        "name": "Ore in potenza 4"
+      },
+      "power_5_hours": {
+        "name": "Ore in potenza 5"
+      },
+      "minutes_to_off": {
+        "name": "Minuti allo spegnimento"
+      },
+      "ignitions": {
+        "name": "Accensioni"
+      },
+      "season": {
+        "name": "Stagione",
+        "state": {
+          "winter": "Inverno",
+          "summer": "Estate"
+        }
+      },
+      "stove_clock": {
+        "name": "Orologio stufa"
+      },
+      "profile": {
+        "name": "Profilo (grezzo)"
+      },
+      "antifreeze": {
+        "name": "Antigelo (grezzo)"
+      }
+    },
+    "binary_sensor": {
+      "heating": {
+        "name": "In riscaldamento"
+      },
+      "alarm": {
+        "name": "Allarme"
+      },
+      "igniter": {
+        "name": "Candeletta"
+      },
+      "brazier": {
+        "name": "Braciere da pulire"
+      },
+      "pellets_empty": {
+        "name": "Pellet esaurito"
+      },
+      "cloud": {
+        "name": "Cloud MCZ"
+      }
+    },
+    "button": {
+      "reset_alarm": {
+        "name": "Reset allarme"
+      },
+      "sync_clock": {
+        "name": "Sincronizza orologio stufa"
+      },
+      "refresh": {
+        "name": "Aggiorna"
+      }
+    }
+  },
+  "exceptions": {
+    "not_connected": {
+      "message": "Cloud MCZ non connesso, riprova tra poco."
+    },
+    "no_first_frame": {
+      "message": "La stufa non ha risposto tramite il cloud MCZ."
+    },
+    "stale": {
+      "message": "Nessun dato dalla stufa da {seconds} s."
+    }
+  }
+}

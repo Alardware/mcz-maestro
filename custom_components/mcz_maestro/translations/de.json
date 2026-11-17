@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MCZ-Maestro-Ofen",
+        "description": "Ofen, der mit der alten MCZ-Maestro-App gekoppelt ist (Seriennummer + Remote-MAC-Adresse). Beide stehen in der App unter Geräteliste.",
+        "data": {
+          "name": "Name",
+          "serial": "Seriennummer",
+          "mac": "Remote-MAC-Adresse"
+        },
+        "data_description": {
+          "serial": "Auf dem Typenschild des Ofens oder in der App.",
+          "mac": "12 Hexadezimalzeichen, mit oder ohne Doppelpunkte."
+        }
+      },
+      "reconfigure": {
+        "title": "Remote-MAC-Adresse ändern",
+        "data": {
+          "mac": "Remote-MAC-Adresse"
+        }
+      }
+    },
+    "error": {
+      "invalid_serial": "Ungültige Seriennummer.",
+      "invalid_mac": "Ungültige MAC-Adresse (12 Hexadezimalzeichen).",
+      "cannot_connect": "MCZ-Cloud nicht erreichbar.",
+      "no_response": "Die MCZ-Cloud antwortet, der Ofen aber nicht: prüfe, ob er online ist und ob Seriennummer/MAC stimmen.",
+      "unknown": "Unerwarteter Fehler, siehe Protokolle."
+    },
+    "abort": {
+      "already_configured": "Dieser Ofen ist bereits eingerichtet.",
+      "reconfigure_successful": "MAC-Adresse aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optionen",
+        "data": {
+          "scan_interval": "Aktualisierungsintervall (s)"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft der Ofen nach neuen Daten gefragt wird (15–300 s)."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "stove": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "dynamic": "Dynamic",
+              "manual": "Manuell"
+            }
+          }
+        }
+      }
+    },
+    "fan": {
+      "room_fan": {
+        "name": "Raumgebläse",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "auto": "Auto"
+            }
+          }
+        }
+      }
+    },
+    "select": {
+      "power_level": {
+        "name": "Leistungsstufe"
+      }
+    },
+    "switch": {
+      "eco": {
+        "name": "Eco Stop"
+      },
+      "chrono": {
+        "name": "Chrono"
+      },
+      "silent": {
+        "name": "Leise"
+      },
+      "active": {
+        "name": "Active"
+      },
+      "sounds": {
+        "name": "Töne"
+      }
+    },
+    "sensor": {
+      "state": {
+        "name": "Status",
+        "state": {
+          "off": "Aus",
+          "checking": "Prüfung warm/kalt",
+          "cleaning_cold": "Reinigung (kalt)",
+          "loading_cold": "Pelletbeschickung (kalt)",
+          "start_1_cold": "Start 1 (kalt)",
+          "start_2_cold": "Start 2 (kalt)",
+          "cleaning_hot": "Reinigung (warm)",
+          "loading_hot": "Pelletbeschickung (warm)",
+          "start_1_hot": "Start 1 (warm)",
+          "start_2_hot": "Start 2 (warm)",
+          "stabilising": "Stabilisierung",
+          "power_1": "Leistung 1",
+          "power_2": "Leistung 2",
+          "power_3": "Leistung 3",
+          "power_4": "Leistung 4",
+          "power_5": "Leistung 5",
+          "diagnostics": "Diagnose",
+          "on": "An",
+          "extinguishing": "Abschaltung",
+          "cooling": "Abkühlung",
+          "cleaning_low": "Reinigung (Niederdruck)",
+          "cleaning_high": "Reinigung (Hochdruck)",
+          "unlocking_auger": "Förderschnecke lösen",
+          "auto_eco": "Auto Eco",
+          "standby": "Standby",
+          "loading_auger": "Förderschnecke füllen",
+          "waiting_safety_alarms": "Warten auf Sicherheitsalarme",
+          "unknown": "Unbekannt",
+          "alarm_a01": "Alarm A01 – Zündung fehlgeschlagen",
+          "alarm_a02": "Alarm A02 – Keine Flamme",
+          "alarm_a03": "Alarm A03 – Überhitzung Behälter",
+          "alarm_a04": "Alarm A04 – Abgastemperatur zu hoch",
+          "alarm_a05": "Alarm A05 – Rauchrohr verstopft oder Wind",
+          "alarm_a06": "Alarm A06 – Unzureichender Zug",
+          "alarm_a09": "Alarm A09 – Abgasfühler defekt",
+          "alarm_a11": "Alarm A11 – Getriebemotor defekt",
+          "alarm_a12": "Alarm A12 – Getriebemotor-Steuerung defekt",
+          "alarm_a13": "Alarm A13 – Platinentemperatur zu hoch",
+          "alarm_a14": "Alarm A14 – Active-Fehler",
+          "alarm_a17": "Alarm A17 – Förderschnecke blockiert",
+          "alarm_a18": "Alarm A18 – Wassertemperatur zu hoch",
+          "alarm_a19": "Alarm A19 – Wasserfühler defekt",
+          "alarm_a20": "Alarm A20 – Zusatzfühler defekt",
+          "alarm_a21": "Alarm A21 – Druckschalter-Alarm",
+          "alarm_a22": "Alarm A22 – Raumfühler defekt",
+          "alarm_a23": "Alarm A23 – Fehler Brennschalen-Verschluss"
+        }
+      },
+      "alarm": {
+        "name": "Alarm",
+        "state": {
+          "none": "Keiner",
+          "safety": "Warten auf Sicherheitsalarme",
+          "a01": "A01 – Zündung fehlgeschlagen",
+          "a02": "A02 – Keine Flamme",
+          "a03": "A03 – Überhitzung Behälter",
+          "a04": "A04 – Abgastemperatur zu hoch",
+          "a05": "A05 – Rauchrohr verstopft oder Wind",
+          "a06": "A06 – Unzureichender Zug",
+          "a09": "A09 – Abgasfühler defekt",
+          "a11": "A11 – Getriebemotor defekt",
+          "a12": "A12 – Getriebemotor-Steuerung defekt",
+          "a13": "A13 – Platinentemperatur zu hoch",
+          "a14": "A14 – Active-Fehler",
+          "a17": "A17 – Förderschnecke blockiert",
+          "a18": "A18 – Wassertemperatur zu hoch",
+          "a19": "A19 – Wasserfühler defekt",
+          "a20": "A20 – Zusatzfühler defekt",
+          "a21": "A21 – Druckschalter-Alarm",
+          "a22": "A22 – Raumfühler defekt",
+          "a23": "A23 – Fehler Brennschalen-Verschluss"
+        }
+      },
+      "ambient_temp": {
+        "name": "Raumtemperatur"
+      },
+      "fumes_temp": {
+        "name": "Abgastemperatur"
+      },
+      "setpoint": {
+        "name": "Solltemperatur"
+      },
+      "board_temp": {
+        "name": "Platinentemperatur"
+      },
+      "power": {
+        "name": "Aktuelle Leistung"
+      },
+      "fumes_fan_rpm": {
+        "name": "Drehzahl Abgasgebläse"
+      },
+      "auger_rpm": {
+        "name": "Förderschnecke"
+      },
+      "auger_rpm_set": {
+        "name": "Förderschnecke Soll"
+      },
+      "active_live": {
+        "name": "Active"
+      },
+      "active_set": {
+        "name": "Active Soll"
+      },
+      "hours_to_service": {
+        "name": "Stunden bis zur Wartung"
+      },
+      "total_hours": {
+        "name": "Betriebsstunden"
+      },
+      "power_1_hours": {
+        "name": "Betriebsstunden Stufe 1"
+      },
+      "power_2_hours": {
+        "name": "Betriebsstunden Stufe 2"
+      },
+      "power_3_hours": {
+        "name": "Betriebsstunden Stufe 3"
+      },
+      "power_4_hours": {
+        "name": "Betriebsstunden Stufe 4"
+      },
+      "power_5_hours": {
+        "name": "Betriebsstunden Stufe 5"
+      },
+      "minutes_to_off": {
+        "name": "Minuten bis zur Abschaltung"
+      },
+      "ignitions": {
+        "name": "Zündungen"
+      },
+      "season": {
+        "name": "Saison",
+        "state": {
+          "winter": "Winter",
+          "summer": "Sommer"
+        }
+      },
+      "stove_clock": {
+        "name": "Ofenuhr"
+      },
+      "profile": {
+        "name": "Profil (roh)"
+      },
+      "antifreeze": {
+        "name": "Frostschutz (roh)"
+      }
+    },
+    "binary_sensor": {
+      "heating": {
+        "name": "Heizt"
+      },
+      "alarm": {
+        "name": "Alarm"
+      },
+      "igniter": {
+        "name": "Glühzünder"
+      },
+      "brazier": {
+        "name": "Brennschale reinigen"
+      },
+      "pellets_empty": {
+        "name": "Pellets leer"
+      },
+      "cloud": {
+        "name": "MCZ-Cloud"
+      }
+    },
+    "button": {
+      "reset_alarm": {
+        "name": "Alarm zurücksetzen"
+      },
+      "sync_clock": {
+        "name": "Ofenuhr synchronisieren"
+      },
+      "refresh": {
+        "name": "Aktualisieren"
+      }
+    }
+  },
+  "exceptions": {
+    "not_connected": {
+      "message": "MCZ-Cloud nicht verbunden, versuche es gleich noch einmal."
+    },
+    "no_first_frame": {
+      "message": "Der Ofen hat über die MCZ-Cloud nicht geantwortet."
+    },
+    "stale": {
+      "message": "Seit {seconds} s keine Daten vom Ofen."
+    }
+  }
+}

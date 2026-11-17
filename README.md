@@ -1,132 +1,133 @@
 <p align="center"><img src="docs/emblem.svg" width="112" alt=""></p>
 
-# MCZ Maestro (cloud) pour Home Assistant
+# MCZ Maestro (cloud) for Home Assistant
 
 [![CI](https://github.com/Alardware/mcz-maestro/actions/workflows/validate.yml/badge.svg)](https://github.com/Alardware/mcz-maestro/actions)
-[![HACS](https://img.shields.io/badge/HACS-dépôt%20personnalisé-41bdf5)](https://hacs.xyz/docs/faq/custom_repositories/)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-soutenir%20le%20projet-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/alardware)
+[![HACS](https://img.shields.io/badge/HACS-custom%20repository-41bdf5)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20the%20project-ff5f5f?logo=ko-fi&logoColor=white)](https://ko-fi.com/alardware)
 
-Intégration Home Assistant pour les poêles à granulés MCZ équipés du module **Maestro
-première génération** : ceux qu'on pilote avec l'ancienne appli « MCZ Maestro », appairée par
-**numéro de série + adresse MAC remote**.
+*Version française : [README.fr.md](README.fr.md)*
 
-> Les poêles liés à un **compte** dans la nouvelle appli MCZ (Maestro+) relèvent d'une autre
-> intégration : [Robbe-B/maestro_mcz](https://github.com/Robbe-B/maestro_mcz).
+Home Assistant integration for MCZ pellet stoves fitted with the **first-generation Maestro**
+module: the ones controlled with the legacy "MCZ Maestro" app, paired with a
+**serial number + remote MAC address**.
 
-- Passe par le cloud MCZ, comme l'appli : rien à câbler, fonctionne partout.
-- Aucune dépendance Python externe.
-- Mises à jour en direct (connexion permanente) + rafraîchissement toutes les 30 s.
-- Carte Lovelace incluse (`custom:mcz-maestro-card`), installée automatiquement.
-- Suit la langue de Home Assistant : entités, carte et alertes en français ou en anglais
-  (anglais pour les autres langues).
-- Icône propre dans la liste des intégrations (Home Assistant 2026.3+).
+> Stoves linked to an **account** in the newer MCZ app (Maestro+) are covered by another
+> integration: [Robbe-B/maestro_mcz](https://github.com/Robbe-B/maestro_mcz).
 
-Projet communautaire, sans lien avec MCZ.
+- Goes through the MCZ cloud, like the app: no wiring, works from anywhere.
+- No external Python dependency.
+- Live updates (persistent connection) plus a refresh every 30 s.
+- Lovelace card included (`custom:mcz-maestro-card`), installed automatically.
+- Follows Home Assistant's language: entities, card and alerts in English, French, Italian
+  or German (English for other languages).
+- Its own icon in the integrations list (Home Assistant 2026.3+).
+
+Community project, not affiliated with MCZ.
 
 ## Installation (HACS)
 
-1. HACS → menu ⋮ → **Dépôts personnalisés** → ajouter `https://github.com/Alardware/mcz-maestro`,
-   catégorie **Intégration**.
-2. Installer **MCZ Maestro (cloud)**, puis redémarrer Home Assistant.
-3. **Paramètres → Appareils et services → Ajouter une intégration → MCZ Maestro**.
-4. Saisir le nom, le **numéro de série** et l'**adresse MAC remote**. Les deux sont dans
-   l'appli MCZ, menu **Liste des dispositifs** (le numéro de série aussi sur la plaque du poêle).
+1. HACS → ⋮ menu → **Custom repositories** → add `https://github.com/Alardware/mcz-maestro`,
+   category **Integration**.
+2. Install **MCZ Maestro (cloud)**, then restart Home Assistant.
+3. **Settings → Devices & services → Add integration → MCZ Maestro**.
+4. Enter a name, the **serial number** and the **remote MAC address**. Both are shown in the
+   MCZ app under **Device list** (the serial number is also on the stove's rating plate).
 
-L'intégration vérifie en direct que le poêle répond avant de valider.
+The integration checks that the stove answers before saving.
 
-> 🔒 Le couple numéro de série + MAC suffit pour piloter le poêle via le cloud MCZ.
-> Ne le publie pas (issue GitHub, forum, capture d'écran). L'intégration le garde dans
-> Home Assistant et le masque dans les diagnostics.
+> 🔒 The serial number + MAC pair is enough to control the stove through the MCZ cloud.
+> Do not publish it (GitHub issue, forum, screenshot). The integration keeps it inside
+> Home Assistant and masks it in diagnostics.
 
-Installation manuelle : copier `custom_components/mcz_maestro` dans `/config/custom_components/`.
+Manual install: copy `custom_components/mcz_maestro` into `/config/custom_components/`.
 
-## Entités
+## Entities
 
-| Type | Entités |
+| Type | Entities |
 |---|---|
-| Thermostat | Marche/arrêt, consigne (pas 0,5 °C), T° ambiante, préréglages **Dynamic** / **Manuel** |
-| Ventilateur | Ventilateur ambiance : vitesses 1–5 + Auto |
-| Sélecteur | Puissance 1–5 (utilisée en Manuel) |
-| Interrupteurs | Eco Stop, Chrono, Silence, Active, Sons |
-| Capteurs | État, alarme, T° ambiante, T° fumées, consigne, T° carte mère, puissance actuelle, extracteur fumées, vis sans fin (réel / consigne), Active (réel / consigne), heures avant entretien, temps de fonctionnement (total + par puissance), minutes avant extinction, allumages, saison, horloge du poêle |
-| Binaires | En chauffe, alarme, bougie, brasero à nettoyer, granulés vides (si capteur), cloud MCZ |
-| Boutons | Réinitialiser l'alarme, mettre le poêle à l'heure, rafraîchir |
+| Thermostat | On/off, setpoint (0.5 °C steps), room temperature, **Dynamic** / **Manual** presets |
+| Fan | Room fan: speeds 1–5 + Auto |
+| Select | Power level 1–5 (used in Manual) |
+| Switches | Eco Stop, Chrono, Silent, Active, Sounds |
+| Sensors | State, alarm, room temperature, flue gas temperature, setpoint, motherboard temperature, current power, flue fan, auger (live / setpoint), Active (live / setpoint), hours before service, operating time (total + per power level), minutes before shutdown, ignitions, season, stove clock |
+| Binary sensors | Heating, alarm, igniter, brazier to clean, pellets empty (if the stove has the sensor), MCZ cloud |
+| Buttons | Reset alarm, sync stove clock, refresh |
 
-Volontairement absents : menu technique, réglages usine, diagnostic moteur.
-L'édition des plages Chrono reste dans l'appli MCZ (l'interrupteur Chrono les active).
+Left out on purpose: technical menu, factory settings, motor diagnostics.
+Chrono time slots are still edited in the MCZ app (the Chrono switch turns them on or off).
 
-## Carte
+## Card
 
 ```yaml
 type: custom:mcz-maestro-card
-entity: climate.poele
-# name: Salon   # optionnel
+entity: climate.stove
+# name: Living room   # optional
 ```
 
-Cadran (T° ambiante, consigne ±0,5 °C), marche/arrêt, Dynamic/Manuel, puissance, ventilation,
-Eco Stop / Chrono / Silence, bloc Infos, bandeau d'alarme avec réinitialisation.
-Elle suit le thème Home Assistant (clair/sombre). Variables CSS facultatives :
+Dial (room temperature, setpoint ±0.5 °C), on/off, Dynamic/Manual, power level, fan,
+Eco Stop / Chrono / Silent, details panel, alarm banner with reset.
+It follows the Home Assistant theme (light/dark). Optional CSS variables:
 `--mcz-accent`, `--mcz-heat-start`, `--mcz-heat-end`.
 
-## Alarme sur le téléphone
+## Alarm on your phone
 
-Chaque nouvelle alarme déclenche l'événement `mcz_maestro_alarm`
-(`code`, `label`, `state`, `device_id`) :
+Every new alarm fires the `mcz_maestro_alarm` event
+(`code`, `label` in Home Assistant's language, `state`, `device_id`):
 
 ```yaml
 automation:
-  - alias: Poêle en alarme
+  - alias: Stove alarm
     triggers:
       - trigger: event
         event_type: mcz_maestro_alarm
     actions:
-      - action: notify.mobile_app_mon_iphone
+      - action: notify.mobile_app_my_phone
         data:
-          title: "Poêle en alarme"
+          title: "Stove alarm"
           message: "{{ trigger.event.data.label }}"
 ```
 
 ## Options
 
-**Configurer** sur l'intégration : intervalle de rafraîchissement (15–300 s, 30 par défaut).
-**Reconfigurer** : changer l'adresse MAC remote (module Wi-Fi remplacé).
+**Configure** on the integration: refresh interval (15–300 s, default 30).
+**Reconfigure**: change the remote MAC address (Wi-Fi module replaced).
 
-## Dépannage
+## Troubleshooting
 
-- Entités indisponibles : aucune donnée du poêle depuis 3 min. Vérifier que l'appli MCZ
-  fonctionne ; l'intégration se reconnecte seule (5 s → 5 min).
-- Le binaire **Cloud MCZ** indique l'état du lien avec le cloud.
-- **Télécharger les diagnostics** (page de l'appareil) : état décodé + trames brutes, sans
-  numéro de série ni MAC.
+- Entities unavailable: no data from the stove for 3 minutes. Check that the MCZ app works;
+  the integration reconnects on its own (5 s → 5 min).
+- The **MCZ cloud** binary sensor shows the state of the cloud link.
+- **Download diagnostics** (device page): decoded state + raw frames, without the serial
+  number or MAC.
 
-## Ajouter un réglage (Eco Stop, entrée ambiante, hors-gel…)
+## Adding a setting (Eco Stop, room input, frost protection…)
 
-Les diagnostics contiennent la trame brute des paramètres (`frames.params`). Pour trouver
-l'emplacement d'un réglage : télécharger les diagnostics, changer **un seul** réglage dans
-l'appli MCZ, attendre une heure (ou recharger l'intégration), retélécharger, comparer les
-deux trames.
+Diagnostics hold the raw parameters frame (`frames.params`). To locate a setting: download
+the diagnostics, change **one** setting in the MCZ app, wait an hour (or reload the
+integration), download again and compare the two frames.
 
-## Développement
+## Development
 
 ```bash
 python -m venv venv && . venv/bin/activate
 pip install pytest-homeassistant-custom-component
-pytest                                   # 100+ tests, faux cloud MCZ intégré
-python tests/card/shoot.py               # carte dans Chrome (playwright), captures dans tests/card/out
-python tools/gen_translations.py         # régénère strings.json / en.json / fr.json
+pytest                                   # 100+ tests against a built-in fake MCZ cloud
+python tests/card/shoot.py               # card in Chrome (playwright), screenshots in tests/card/out
+python tools/gen_translations.py         # regenerates strings.json and translations/*.json
 ```
 
-Le protocole (socket.io sur `app.mcz.it:9000`, trames `C|RecuperoInfo`,
-`C|WriteParametri|id|valeur`) est documenté par la communauté Jeedom / openHAB ;
-le code de ce dépôt est une réécriture indépendante.
+The protocol (socket.io on `app.mcz.it:9000`, `C|RecuperoInfo` and
+`C|WriteParametri|id|value` frames) was documented by the Jeedom / openHAB community;
+the code in this repository is an independent rewrite.
 
-## Soutenir
+## Support
 
-Cette intégration est développée sur mon temps libre. Si elle vous est utile, un café
-aide à la faire vivre :
+This integration is developed in my spare time. If it is useful to you, a coffee
+helps keep it alive:
 
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/alardware)
 
-## Licence
+## License
 
 MIT

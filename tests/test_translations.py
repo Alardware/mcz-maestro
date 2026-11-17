@@ -28,7 +28,10 @@ def _keys(tree: dict, prefix: str = "") -> set[str]:
     return out
 
 
-@pytest.mark.parametrize("lang", ["strings.json", "translations/en.json", "translations/fr.json"])
+LANG_FILES = ["translations/en.json", "translations/fr.json", "translations/it.json", "translations/de.json"]
+
+
+@pytest.mark.parametrize("lang", ["strings.json", *LANG_FILES])
 def test_all_entity_keys_translated(lang) -> None:
     entity = _load(lang)["entity"]
     for desc in SENSORS:
@@ -47,9 +50,26 @@ def test_all_entity_keys_translated(lang) -> None:
     assert set(entity["sensor"]["alarm"]["state"]) == set(ALARM_OPTIONS)
 
 
-def test_french_matches_english_structure() -> None:
-    assert _keys(_load("translations/fr.json")) == _keys(_load("translations/en.json"))
+@pytest.mark.parametrize("lang", LANG_FILES[1:])
+def test_every_language_matches_english_structure(lang) -> None:
+    assert _keys(_load(lang)) == _keys(_load("translations/en.json"))
+
+
+
+def test_strings_is_english() -> None:
     assert _load("strings.json") == _load("translations/en.json")
+
+
+def test_card_has_every_string_in_every_language() -> None:
+    import re
+
+    card = (ROOT / "frontend" / "mcz-maestro-card.js").read_text(encoding="utf-8")
+    block = card[card.index("const I18N = {") : card.index("};", card.index("const I18N = {"))]
+    langs = re.split(r"\n  (\w\w): \{", block)[1:]
+    tables = {langs[i]: set(re.findall(r"\n    (\w+):", langs[i + 1])) for i in range(0, len(langs), 2)}
+    assert set(tables) == {"fr", "en", "it", "de"}
+    for lang, keys in tables.items():
+        assert keys == tables["en"], lang
 
 
 def test_icons_reference_known_keys() -> None:
