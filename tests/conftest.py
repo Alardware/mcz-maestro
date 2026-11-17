@@ -68,3 +68,44 @@ PARAMS_FRAME = "00|" + "|".join(format(i, "x") for i in range(1, 80))
 def reference_frame() -> str:
     """Info frame matching the stove's Info screen."""
     return REFERENCE_FRAME
+
+
+@pytest.fixture
+async def fake_cloud_factory(socket_enabled):
+    """Start in-process fake MCZ clouds on 127.0.0.1."""
+    from aiohttp.test_utils import TestServer
+
+    from .fake_cloud import FakeMczCloud
+
+    started: list[tuple[FakeMczCloud, TestServer]] = []
+
+    async def factory(**kwargs) -> FakeMczCloud:
+        cloud = FakeMczCloud(**kwargs)
+        server = TestServer(cloud.app, host="127.0.0.1")
+        await server.start_server()
+        cloud.url = str(server.make_url("")).rstrip("/")
+        started.append((cloud, server))
+        return cloud
+
+    yield factory
+    for cloud, server in started:
+        await cloud.drop_all()
+        await server.close()
+
+
+@pytest.fixture
+async def fake_cloud(fake_cloud_factory):
+    """Default fake cloud: socket.io 2 (EIO3) over websocket."""
+    return await fake_cloud_factory()
+
+
+@pytest.fixture
+def dead_url(socket_enabled) -> str:
+    """URL of a closed local port."""
+    import socket
+
+    sock = socket.socket()
+    sock.bind(("127.0.0.1", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    return f"http://127.0.0.1:{port}"
