@@ -1,8 +1,16 @@
 {
   "domain": "mcz_maestro",
   "name": "MCZ Maestro (cloud)",
-  "after_dependencies": ["http", "frontend"],
-  "codeowners": ["@Alardware"],
+  "after_dependencies": [
+    "http",
+    "frontend"
+  ],
+  "categories": [
+    "climate.thermostats_heating"
+  ],
+  "codeowners": [
+    "@Alardware"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/Alardware/mcz-maestro",
   "integration_type": "device",
