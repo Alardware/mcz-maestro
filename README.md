@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/emblem.svg" width="112" alt=""></p>
 
-# MCZ Maestro (ancienne appli) pour Home Assistant
+# MCZ Maestro (cloud) pour Home Assistant
 
 [![CI](https://github.com/Alardware/mcz-maestro/actions/workflows/validate.yml/badge.svg)](https://github.com/Alardware/mcz-maestro/actions)
 [![HACS](https://img.shields.io/badge/HACS-dépôt%20personnalisé-41bdf5)](https://hacs.xyz/docs/faq/custom_repositories/)
@@ -26,7 +26,7 @@ Projet communautaire, sans lien avec MCZ.
 
 1. HACS → menu ⋮ → **Dépôts personnalisés** → ajouter `https://github.com/Alardware/mcz-maestro`,
    catégorie **Intégration**.
-2. Installer **MCZ Maestro (ancienne appli)**, puis redémarrer Home Assistant.
+2. Installer **MCZ Maestro (cloud)**, puis redémarrer Home Assistant.
 3. **Paramètres → Appareils et services → Ajouter une intégration → MCZ Maestro**.
 4. Saisir le nom, le **numéro de série** et l'**adresse MAC remote**. Les deux sont dans
    l'appli MCZ, menu **Liste des dispositifs** (le numéro de série aussi sur la plaque du poêle).

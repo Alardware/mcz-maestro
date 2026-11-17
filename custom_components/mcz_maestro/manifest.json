@@ -1,6 +1,6 @@
 {
   "domain": "mcz_maestro",
-  "name": "MCZ Maestro (ancienne appli)",
+  "name": "MCZ Maestro (cloud)",
   "after_dependencies": ["http", "frontend"],
   "codeowners": ["@Alardware"],
   "config_flow": true,
@@ -9,5 +9,5 @@
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/Alardware/mcz-maestro/issues",
   "requirements": [],
-  "version": "0.1.1"
+  "version": "0.1.2"
 }

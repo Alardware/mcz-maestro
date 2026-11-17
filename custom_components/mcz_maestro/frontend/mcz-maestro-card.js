@@ -2,7 +2,7 @@
  * mcz-maestro-card — Lovelace card for the MCZ Maestro (legacy app) integration.
  * Vanilla web component, no external dependency. Served by the integration.
  */
-const CARD_VERSION = "0.1.1";
+const CARD_VERSION = "0.1.2";
 const DOMAIN = "mcz_maestro";
 const SCALE_MIN = 10;
 const SCALE_MAX = 30;
@@ -623,7 +623,7 @@ if (!customElements.get("mcz-maestro-card")) {
   window.customCards.push({
     type: "mcz-maestro-card",
     name: "MCZ Maestro",
-    description: "Poêle à granulés MCZ (ancienne appli Maestro)",
+    description: "Poêle à granulés MCZ Maestro (cloud, ancienne appli)",
     preview: true,
     documentationURL: "https://github.com/Alardware/mcz-maestro",
   });
