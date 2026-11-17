@@ -7,7 +7,7 @@ Date : 2026-11-17 · Statut : validé à l'oral, en relecture
 Piloter et surveiller depuis Home Assistant (HAOS) le poêle à granulés MCZ
 équipé du module **Maestro première génération** (appli historique « MCZ Maestro »,
 appairage par n° de série + adresse MAC), avec tout ce que montre l'appli officielle :
-marche/arrêt, consigne, mode Auto/Manuel, puissance, ventilateur, Éco, Chrono, écran Info.
+marche/arrêt, consigne, mode Dynamic/Manuel, puissance, ventilateur, Éco, Chrono, écran Info.
 
 L'intégration existante `Robbe-B/maestro_mcz` ne couvre que la nouvelle appli (compte MCZ) :
 elle ne convient pas à ce poêle.
@@ -39,7 +39,9 @@ elle ne convient pas à ce poêle.
 - Requête : `emit("chiedo", {"serialNumber", "macAddress", "tipoChiamata": 1, "richiesta": <cmd>})`.
 - Réponse : événement `rispondo` → `{"stringaRicevuta": "<trame>"}`.
 - Trame = champs séparés par `|`, champ 0 = type (`01` info, `00` paramètres, `0A` alarmes,
-  `PING`…), autres champs en hexadécimal. Seul le type `01` est exploité ; le reste est journalisé.
+  `PING`…), autres champs en hexadécimal. Seul le type `01` est décodé. Le type `00`
+  (réponse à `RecuperoParametri`, `tipoChiamata: 0`, envoyé au démarrage puis toutes les
+  heures) est conservé brut pour les diagnostics (§8). Le reste est journalisé.
 - MAC normalisée : majuscules, sans `:` ni `-` (12 hex). N° de série : chiffres uniquement.
 
 ### 3.3 Trame Info (`C|RecuperoInfo` → `01|…`)
@@ -59,7 +61,7 @@ elle ne convient pas à ce poêle.
 | 18 | Profil | brut (lecture seule, voir §8) |
 | 20 | Mode Active | 0/1 |
 | 21 | Active réel | entier |
-| 22 | Régulation | 0 manuel, 1 auto |
+| 22 | Mode de fonctionnement | 0 Manual (main), 1 Dynamic (flamme A) |
 | 23 | Éco | 0/1 |
 | 24 | Silence | 0/1 |
 | 25 | Chrono | 0/1 |
@@ -69,7 +71,7 @@ elle ne convient pas à ce poêle.
 | 32–36 | Horloge poêle h, min, j, mois, année | entiers |
 | 37 | Temps de fonctionnement total | secondes → heures |
 | 38–42 | Temps en puissance 1 à 5 | secondes → heures |
-| 43 | Heures avant entretien | entier |
+| 43 | Heures avant entretien (« HEURES AU SERVICE » de l'appli, cf. §8) | entier |
 | 44 | Minutes avant extinction | entier |
 | 45 | Nombre d'allumages | entier |
 | 46 | Active – T° | entier |
@@ -88,7 +90,7 @@ Champs absents ou non hexadécimaux → valeur `None`, jamais d'exception.
 | Consigne | 42 | °C × 2 |
 | Puissance | 36 | 1–5 |
 | Ventilateur ambiance | 37 | 0–5, 6 = auto |
-| Régulation Auto / Manuel | 40 | 1 / 0 |
+| Mode Dynamic / Manual | 40 | 1 / 0 |
 | Éco | 41 | 0/1 |
 | Active | 35 | 0/1 |
 | Silence | 45 | 0/1 |
@@ -152,11 +154,11 @@ ignore le réseau, `api` assemble les deux, `coordinator` fait le lien avec HA.
 
 | Plateforme | Entité | Source / commande |
 |---|---|---|
-| climate | Poêle : HEAT/OFF, consigne 5–35 °C pas 0,5, T° ambiante, presets `auto`/`manual`, hvac_action heating/idle/off | 1, 6, 22, 26 / 34, 42, 40 |
+| climate | Poêle : HEAT/OFF, consigne 5–35 °C pas 0,5, T° ambiante, presets `dynamic`/`manual` (libellés « Dynamic » / « Manuel »), hvac_action heating/idle/off | 1, 6, 22, 26 / 34, 42, 40 |
 | fan | Ventilateur ambiance : 5 vitesses + preset `auto`, arrêt | 2 / 37 |
 | select | Puissance 1–5 | 29 / 36 |
 | switch | Éco, Chrono, Silence, Active, Sons | 23, 25, 24, 20, 49 |
-| sensor | État (enum), T° fumées, T° carte mère, consigne, RPM extracteur, vis sans fin réel, vis sans fin consigne, Active réel, Active consigne, puissance réelle, temps total (h), temps P1–P5 (h, désactivés par défaut), heures avant entretien, minutes avant extinction, nb allumages, code alarme, profil (brut, diagnostic), antigel (brut, diagnostic), saison | §3.3 |
+| sensor | État (enum), T° fumées, T° carte mère, consigne, RPM extracteur, vis sans fin réel, vis sans fin consigne, Active réel, Active consigne, puissance réelle, temps total (h), temps P1–P5 (h, désactivés par défaut), heures avant entretien, minutes avant extinction, nb allumages, code alarme, profil (brut, diagnostic), hors-gel (brut, diagnostic), saison | §3.3 |
 | binary_sensor | En chauffe, Bougie, Alarme (problem), Brasero à nettoyer, Granulés vides (si capteur présent) | 1, 10, 17, 47 |
 | button | Reset alarme, Synchro heure, Rafraîchir | §3.4 |
 
@@ -170,8 +172,10 @@ Entités techniques en catégorie *diagnostic*. Disponibilité : connexion OK et
   `translation_key`).
 - Cadran circulaire : T° ambiante en grand, consigne dessous, arc indiquant l'écart, −/+ 0,5 °C
   (envoi groupé après 1 s sans clic).
-- Bouton marche/arrêt, état en clair, pastilles Éco / Chrono / Auto–Manuel.
-- Puissance 1–5 (segments, actifs en Manuel), ventilateur 1–5 / Auto.
+- Bouton marche/arrêt, état en clair, pastilles Éco / Chrono, bascule Dynamic (flamme A) /
+  Manuel (main).
+- En Dynamic : consigne active, puissance affichée en lecture (choisie par le poêle).
+  En Manuel : consigne grisée, puissance 1–5 réglable (segments). Ventilateur 1–5 / Auto.
 - Bloc « Infos » repliable : fumées, vis sans fin, extracteur, Active, heures, entretien.
 - Bandeau d'alarme rouge avec code, libellé et bouton reset.
 - Style Loggia, variables CSS du thème HA (clair/sombre), 360 px de large minimum.
@@ -191,10 +195,33 @@ Entités techniques en catégorie *diagnostic*. Disponibilité : connexion OK et
 
 ## 8. Points à valider sur le vrai poêle
 
+Résolus :
+- « DYNAMIC » = mode de fonctionnement (idx 22, commande 40), confirmé par l'écran
+  « Mode de fonctionnement » de l'appli.
+- « HEURES AU SERVICE 660 » = très probablement les heures **avant entretien** (idx 43,
+  traduction littérale de l'italien « ore al servizio ») : 660 h de marche totale depuis
+  plusieurs saisons serait bien trop peu. Le temps total (idx 37) reste exposé à part.
+
+À confirmer avec la première trame réelle (diagnostics) :
 1. Version socket.io réellement servie par `app.mcz.it:9000`.
-2. Valeurs du profil (idx 18) affiché « DYNAMIC » → éventuel select ensuite.
-3. « HEURES AU SERVICE 660 » = temps total (idx 37) ou heures avant entretien (idx 43).
-4. Signification exacte de l'antigel (idx 60, commande 154) → éventuel interrupteur ensuite.
+2. Idx 43 = 660 et idx 37 ÷ 3600 ≫ 660 (confirme le point ci-dessus).
+3. Hors-gel ❄️ (idx 60, commande 154) : lecture seule tant que la valeur n'est pas comprise.
+4. Profil (idx 18) : diagnostic brut uniquement.
+
+### Phase 2 (après capture, hors livraison initiale)
+Les diagnostics exposent les trames brutes `01` et `00` (série/MAC masqués). En changeant un
+réglage dans l'appli puis en comparant deux captures, on identifie son index, puis on ajoute :
+- Eco Stop : délai d'activation (min) et hystérésis de rallumage (°C) → entités `number`
+- Entrée ambiante (Sonde WiFi / Thermostat / Sonde amb.) → `select`
+- Hors-gel → `switch`
+- Températures Chrono T1–T3 → `number`
+
+Le poêle a aussi un mode « WIFI HOME » (réseau local) : un mode local sans cloud reste
+possible plus tard, avec le même protocole.
+
+Infos appareil (Versions logiciel de l'appli) : FW carte 1.8.1, remote 1.2.5, banque de
+données TA08 rev 4. `sw_version` de l'appareil HA = idx 30 brut tant que l'encodage n'est pas
+confirmé.
 
 ## 9. Tests
 
@@ -202,9 +229,10 @@ Entités techniques en catégorie *diagnostic*. Disponibilité : connexion OK et
 - Faux serveur cloud MCZ (aiohttp) en Engine.IO v3 **et** v4, websocket et polling.
 - Trame de référence reconstituée depuis l'écran Info de l'appli (fumées 120, ambiante 18,
   consigne 19, extracteur 1886, vis 1350/1400, Active 166/160, carte mère 23, ventilo auto,
-  Auto ON, Éco ON, puissance 5).
+  Dynamic ON, Éco ON, puissance 5, avant entretien 660 h).
 - Couverture : négociation de version, keep-alive, reconnexion, décodage, chaque commande,
-  config flow (succès + chaque erreur), chaque entité, événement d'alarme, diagnostics masqués.
+  config flow (succès + chaque erreur), chaque entité, événement d'alarme, diagnostics
+  (trames brutes `00`/`01` présentes, série et MAC masqués partout).
 - Carte : rendu navigateur headless avec faux `hass`, clair/sombre, 390 px et desktop,
   clics → appels de service attendus.
 
