@@ -9,19 +9,24 @@ from homeassistant.components.climate import (
     ATTR_HVAC_ACTION,
     ATTR_HVAC_MODE,
     ATTR_PRESET_MODE,
-    DOMAIN as CLIMATE,
     SERVICE_SET_HVAC_MODE,
     SERVICE_SET_PRESET_MODE,
     SERVICE_SET_TEMPERATURE,
 )
+from homeassistant.components.climate import (
+    DOMAIN as CLIMATE,
+)
 from homeassistant.components.fan import (
     ATTR_PERCENTAGE,
-    DOMAIN as FAN,
     SERVICE_SET_PERCENTAGE,
 )
 from homeassistant.components.fan import ATTR_PRESET_MODE as FAN_PRESET
+from homeassistant.components.fan import (
+    DOMAIN as FAN,
+)
 from homeassistant.components.fan import SERVICE_SET_PRESET_MODE as FAN_SET_PRESET
-from homeassistant.components.select import ATTR_OPTION, DOMAIN as SELECT, SERVICE_SELECT_OPTION
+from homeassistant.components.select import ATTR_OPTION, SERVICE_SELECT_OPTION
+from homeassistant.components.select import DOMAIN as SELECT
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_TEMPERATURE,

@@ -11,7 +11,13 @@ from homeassistant.const import CONF_NAME
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import CannotConnect, NoResponse, async_validate, normalize_mac, normalize_serial
+from .api import (
+    CannotConnect,
+    NoResponse,
+    async_validate,
+    normalize_mac,
+    normalize_serial,
+)
 from .const import (
     CONF_MAC,
     CONF_SCAN_INTERVAL,

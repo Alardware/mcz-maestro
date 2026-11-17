@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.const import CONF_NAME
 from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.data_entry_flow import FlowResultType, InvalidData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.mcz_maestro.const import (
@@ -116,7 +116,7 @@ async def test_options_flow_rejects_out_of_range(hass: HomeAssistant) -> None:
     entry = MockConfigEntry(domain=DOMAIN, unique_id=SERIAL, data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidData):
         await hass.config_entries.options.async_configure(result["flow_id"], {CONF_SCAN_INTERVAL: 5})
 
 

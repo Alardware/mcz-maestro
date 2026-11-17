@@ -1,0 +1,67 @@
+{
+  "entity": {
+    "climate": {
+      "stove": {
+        "default": "mdi:fireplace",
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "dynamic": "mdi:thermostat-auto",
+              "manual": "mdi:hand-back-right"
+            }
+          }
+        }
+      }
+    },
+    "fan": {
+      "room_fan": { "default": "mdi:fan" }
+    },
+    "select": {
+      "power_level": { "default": "mdi:speedometer" }
+    },
+    "switch": {
+      "eco": { "default": "mdi:leaf", "state": { "off": "mdi:leaf-off" } },
+      "chrono": { "default": "mdi:calendar-clock" },
+      "silent": { "default": "mdi:volume-off", "state": { "off": "mdi:volume-high" } },
+      "active": { "default": "mdi:fire-circle" },
+      "sounds": { "default": "mdi:volume-high", "state": { "off": "mdi:volume-off" } }
+    },
+    "sensor": {
+      "state": { "default": "mdi:fireplace" },
+      "alarm": { "default": "mdi:alert-circle-outline", "state": { "none": "mdi:check-circle-outline" } },
+      "fumes_temp": { "default": "mdi:smoke" },
+      "setpoint": { "default": "mdi:thermostat" },
+      "board_temp": { "default": "mdi:chip" },
+      "power": { "default": "mdi:fire" },
+      "fumes_fan_rpm": { "default": "mdi:fan" },
+      "auger_rpm": { "default": "mdi:screw-lag" },
+      "auger_rpm_set": { "default": "mdi:screw-lag" },
+      "active_live": { "default": "mdi:fire-circle" },
+      "active_set": { "default": "mdi:fire-circle" },
+      "hours_to_service": { "default": "mdi:wrench-clock" },
+      "total_hours": { "default": "mdi:timer-outline" },
+      "power_1_hours": { "default": "mdi:timer-outline" },
+      "power_2_hours": { "default": "mdi:timer-outline" },
+      "power_3_hours": { "default": "mdi:timer-outline" },
+      "power_4_hours": { "default": "mdi:timer-outline" },
+      "power_5_hours": { "default": "mdi:timer-outline" },
+      "minutes_to_off": { "default": "mdi:timer-off-outline" },
+      "ignitions": { "default": "mdi:counter" },
+      "season": { "default": "mdi:weather-snowy", "state": { "summer": "mdi:weather-sunny" } },
+      "stove_clock": { "default": "mdi:clock-outline" },
+      "profile": { "default": "mdi:tune" },
+      "antifreeze": { "default": "mdi:snowflake-thermometer" }
+    },
+    "binary_sensor": {
+      "heating": { "default": "mdi:fire", "state": { "off": "mdi:fire-off" } },
+      "igniter": { "default": "mdi:flash", "state": { "off": "mdi:flash-off" } },
+      "brazier": { "default": "mdi:broom" },
+      "pellets_empty": { "default": "mdi:grain" }
+    },
+    "button": {
+      "reset_alarm": { "default": "mdi:alarm-light-off-outline" },
+      "sync_clock": { "default": "mdi:clock-check-outline" },
+      "refresh": { "default": "mdi:refresh" }
+    }
+  }
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import itertools
 
 import aiohttp
 import pytest
@@ -115,7 +116,7 @@ async def test_send_spacing_and_debounced_refresh(fake_cloud, http) -> None:
             "C|WriteParametri|36|2",
         )
         times = fake_cloud.request_times
-        assert all(b - a >= 0.18 for a, b in zip(times, times[1:]))
+        assert all(b - a >= 0.18 for a, b in itertools.pairwise(times))
         state = await sink.next_state(3)
         assert state.eco is False
         assert state.setpoint == 20.0
