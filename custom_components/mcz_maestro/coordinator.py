@@ -110,7 +110,9 @@ class MaestroCoordinator(DataUpdateCoordinator[MaestroState]):
         if state.state_code == self._last_alarm:
             return
         self._last_alarm = state.state_code
-        device = dr.async_get(self.hass).async_get_device(identifiers={(DOMAIN, self.serial)})
+        device = dr.async_get(self.hass).async_get_device(
+            identifiers={(DOMAIN, self.config_entry.entry_id)}
+        )
         _LOGGER.warning("Stove alarm: %s", state.alarm_label)
         self.hass.bus.async_fire(
             EVENT_ALARM,

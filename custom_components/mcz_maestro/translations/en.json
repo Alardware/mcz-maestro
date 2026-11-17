@@ -10,7 +10,7 @@
           "mac": "Remote MAC address"
         },
         "data_description": {
-          "serial": "13 digits, e.g. 1234567890123.",
+          "serial": "On the stove's rating plate or in the app.",
           "mac": "12 hex characters, with or without colons."
         }
       },

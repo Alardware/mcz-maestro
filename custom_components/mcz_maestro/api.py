@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import hashlib
 import logging
 import re
 from collections.abc import Callable
@@ -42,6 +43,11 @@ class NoResponse(Exception):
 
 class NotConnected(Exception):
     """Command attempted while the cloud link is down."""
+
+
+def stove_id(serial: str) -> str:
+    """Opaque id used as config entry unique_id, so the serial never appears there."""
+    return hashlib.sha256(f"mcz_maestro:{serial}".encode()).hexdigest()[:16]
 
 
 def normalize_mac(mac: str) -> str:

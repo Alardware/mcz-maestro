@@ -14,7 +14,7 @@ from custom_components.mcz_maestro.protocol import MaestroState
 from .helpers import assert_sent
 
 SERIAL = "1234567890123"
-MAC = "0A1B2CA137E0"
+MAC = "0A1B2C3D4E5F"
 
 
 class Sink:
@@ -218,16 +218,16 @@ async def test_validate_no_response(fake_cloud_factory, http) -> None:
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [
-        ("0A1B2CA137E0", "0A1B2CA137E0"),
-        ("0A1B2C3D4E5F", "0A1B2CA137E0"),
-        (" 0A1B2C3D4E5F ", "0A1B2CA137E0"),
+        ("0A1B2C3D4E5F", "0A1B2C3D4E5F"),
+        ("0a:1b:2c:3d:4e:5f", "0A1B2C3D4E5F"),
+        (" 0A-1B-2C-3D-4E-5F ", "0A1B2C3D4E5F"),
     ],
 )
 def test_normalize_mac(raw, expected) -> None:
     assert api.normalize_mac(raw) == expected
 
 
-@pytest.mark.parametrize("raw", ["", "0A1B2CA137", "0A1B2CA137E0FF", "0A1B2CA137EZ"])
+@pytest.mark.parametrize("raw", ["", "0A1B2C3D4E", "0A1B2C3D4E5F00", "0A1B2C3D4EZZ"])
 def test_normalize_mac_invalid(raw) -> None:
     with pytest.raises(ValueError):
         api.normalize_mac(raw)

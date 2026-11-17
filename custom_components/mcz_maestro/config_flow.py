@@ -17,6 +17,7 @@ from .api import (
     async_validate,
     normalize_mac,
     normalize_serial,
+    stove_id,
 )
 from .const import (
     CONF_MAC,
@@ -53,8 +54,12 @@ class MaestroConfigFlow(ConfigFlow, domain=DOMAIN):
             return "cannot_connect"
         except NoResponse:
             return "no_response"
-        except Exception:  # noqa: BLE001
-            _LOGGER.exception("Unexpected error while checking the stove")
+        except Exception as err:  # noqa: BLE001
+            # No traceback: its text could carry the serial or MAC into the log.
+            detail = repr(err)
+            for secret in (serial, mac, mac.lower()):
+                detail = detail.replace(secret, "**REDACTED**")
+            _LOGGER.error("Unexpected error while checking the stove: %s", detail)
             return "unknown"
         return None
 
@@ -71,7 +76,7 @@ class MaestroConfigFlow(ConfigFlow, domain=DOMAIN):
             except ValueError:
                 errors[CONF_MAC] = "invalid_mac"
             if not errors:
-                await self.async_set_unique_id(serial)
+                await self.async_set_unique_id(stove_id(serial))
                 self._abort_if_unique_id_configured()
                 if (error := await self._validate(serial, mac)) is None:
                     return self.async_create_entry(

@@ -10,7 +10,7 @@
           "mac": "Adresse MAC remote"
         },
         "data_description": {
-          "serial": "13 chiffres, ex. 1234567890123.",
+          "serial": "Sur la plaque du poêle ou dans l'appli.",
           "mac": "12 caractères hexadécimaux, avec ou sans « : »."
         }
       },

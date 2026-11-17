@@ -10,6 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType, InvalidData
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.mcz_maestro.api import stove_id
 from custom_components.mcz_maestro.const import (
     CONF_MAC,
     CONF_SCAN_INTERVAL,
@@ -20,8 +21,8 @@ from custom_components.mcz_maestro.const import (
 pytestmark = pytest.mark.usefixtures("enable_custom_integrations")
 
 SERIAL = "1234567890123"
-MAC = "0A1B2CA137E0"
-USER_INPUT = {CONF_NAME: "Poêle", CONF_SERIAL: SERIAL, CONF_MAC: "0A1B2C3D4E5F"}
+MAC = "0A1B2C3D4E5F"
+USER_INPUT = {CONF_NAME: "Poêle", CONF_SERIAL: SERIAL, CONF_MAC: "0a:1b:2c:3d:4e:5f"}
 
 
 @pytest.fixture(autouse=True)
@@ -43,7 +44,8 @@ async def test_user_flow_success(hass: HomeAssistant, fake_cloud) -> None:
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Poêle"
     assert result["data"] == {CONF_SERIAL: SERIAL, CONF_MAC: MAC}
-    assert result["result"].unique_id == SERIAL
+    assert result["result"].unique_id == stove_id(SERIAL)
+    assert SERIAL not in result["result"].unique_id
     assert fake_cloud.joins[0] == {"serialNumber": SERIAL, "macAddress": MAC, "type": "Android-App"}
 
 
@@ -93,7 +95,7 @@ async def test_user_flow_unexpected_error(hass: HomeAssistant) -> None:
 
 
 async def test_user_flow_already_configured(hass: HomeAssistant) -> None:
-    MockConfigEntry(domain=DOMAIN, unique_id=SERIAL, data={CONF_SERIAL: SERIAL, CONF_MAC: MAC}).add_to_hass(hass)
+    MockConfigEntry(domain=DOMAIN, unique_id=stove_id(SERIAL), data={CONF_SERIAL: SERIAL, CONF_MAC: MAC}).add_to_hass(hass)
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
     result = await hass.config_entries.flow.async_configure(result["flow_id"], USER_INPUT)
     assert result["type"] is FlowResultType.ABORT
@@ -101,7 +103,7 @@ async def test_user_flow_already_configured(hass: HomeAssistant) -> None:
 
 
 async def test_options_flow(hass: HomeAssistant) -> None:
-    entry = MockConfigEntry(domain=DOMAIN, unique_id=SERIAL, data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
+    entry = MockConfigEntry(domain=DOMAIN, unique_id=stove_id(SERIAL), data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] is FlowResultType.FORM
@@ -113,7 +115,7 @@ async def test_options_flow(hass: HomeAssistant) -> None:
 
 
 async def test_options_flow_rejects_out_of_range(hass: HomeAssistant) -> None:
-    entry = MockConfigEntry(domain=DOMAIN, unique_id=SERIAL, data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
+    entry = MockConfigEntry(domain=DOMAIN, unique_id=stove_id(SERIAL), data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
     with pytest.raises(InvalidData):
@@ -122,7 +124,7 @@ async def test_options_flow_rejects_out_of_range(hass: HomeAssistant) -> None:
 
 async def test_reconfigure_mac(hass: HomeAssistant, fake_cloud) -> None:
     entry = MockConfigEntry(
-        domain=DOMAIN, unique_id=SERIAL, title="Poêle", data={CONF_SERIAL: SERIAL, CONF_MAC: "000000000000"}
+        domain=DOMAIN, unique_id=stove_id(SERIAL), title="Poêle", data={CONF_SERIAL: SERIAL, CONF_MAC: "000000000000"}
     )
     entry.add_to_hass(hass)
     result = await entry.start_reconfigure_flow(hass)
@@ -130,7 +132,7 @@ async def test_reconfigure_mac(hass: HomeAssistant, fake_cloud) -> None:
     assert result["step_id"] == "reconfigure"
     with _url(fake_cloud.url):
         result = await hass.config_entries.flow.async_configure(
-            result["flow_id"], {CONF_MAC: "0A1B2C3D4E5F"}
+            result["flow_id"], {CONF_MAC: "0A-1B-2C-3D-4E-5F"}
         )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
@@ -138,7 +140,7 @@ async def test_reconfigure_mac(hass: HomeAssistant, fake_cloud) -> None:
 
 
 async def test_reconfigure_invalid_mac(hass: HomeAssistant) -> None:
-    entry = MockConfigEntry(domain=DOMAIN, unique_id=SERIAL, data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
+    entry = MockConfigEntry(domain=DOMAIN, unique_id=stove_id(SERIAL), data={CONF_SERIAL: SERIAL, CONF_MAC: MAC})
     entry.add_to_hass(hass)
     result = await entry.start_reconfigure_flow(hass)
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {CONF_MAC: "zz"})

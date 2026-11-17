@@ -92,7 +92,7 @@ def build(lang: int) -> dict:
                         "mac": t("Remote MAC address", "Adresse MAC remote"),
                     },
                     "data_description": {
-                        "serial": t("13 digits, e.g. 1234567890123.", "13 chiffres, ex. 1234567890123."),
+                        "serial": t("On the stove's rating plate or in the app.", "Sur la plaque du poêle ou dans l'appli."),
                         "mac": t("12 hex characters, with or without colons.", "12 caractères hexadécimaux, avec ou sans « : »."),
                     },
                 },

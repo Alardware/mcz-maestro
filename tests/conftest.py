@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-# Values read on a real stove's "Info" screen (17/11/2026 05:50).
+# Values copied from a real stove's "Info" screen.
 REFERENCE_VALUES: dict[int, int] = {
     1: 15,  # state: power 5
     2: 6,  # room fan: auto

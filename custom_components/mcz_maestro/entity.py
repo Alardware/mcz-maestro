@@ -17,14 +17,16 @@ class MaestroEntity(CoordinatorEntity[MaestroCoordinator]):
 
     def __init__(self, coordinator: MaestroCoordinator, key: str) -> None:
         super().__init__(coordinator)
-        self._attr_unique_id = f"{coordinator.serial}_{key}"
+        # Registries use the config entry id, never the serial number (half of the
+        # stove's cloud credentials).
+        entry_id = coordinator.config_entry.entry_id
+        self._attr_unique_id = f"{entry_id}_{key}"
         firmware = coordinator.data.firmware if coordinator.data else None
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, coordinator.serial)},
+            identifiers={(DOMAIN, entry_id)},
             name=coordinator.config_entry.title,
             manufacturer=MANUFACTURER,
             model=MODEL,
-            serial_number=coordinator.serial,
             sw_version=str(firmware) if firmware is not None else None,
         )
 

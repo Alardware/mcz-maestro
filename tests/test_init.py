@@ -24,7 +24,7 @@ async def test_setup_and_unload(hass: HomeAssistant, fake_cloud) -> None:
     entry = await setup_integration(hass, fake_cloud)
     assert entry.state is ConfigEntryState.LOADED
     assert hass.states.get("climate.poele") is not None
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, "1234567890123")})
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
     assert device.manufacturer == "MCZ"
     assert device.name == "Poêle"
     assert await hass.config_entries.async_unload(entry.entry_id)
@@ -68,7 +68,7 @@ async def test_alarm_event_fired_once_per_alarm(hass: HomeAssistant, fake_cloud)
     events = async_capture_events(hass, EVENT_ALARM)
     entry = await setup_integration(hass, fake_cloud)
     cloud = entry.runtime_data.cloud
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, "1234567890123")})
+    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
 
     fake_cloud.set_value(1, 50)
     await cloud.request_info()

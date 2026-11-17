@@ -188,7 +188,7 @@ async def test_sensors(hass: HomeAssistant, fake_cloud) -> None:
 
 
 async def test_entity_registry_details(hass: HomeAssistant, fake_cloud) -> None:
-    await setup_integration(hass, fake_cloud)
+    entry = await setup_integration(hass, fake_cloud)
     registry = er.async_get(hass)
     for entity_id in (
         "sensor.poele_operating_time_power_1",
@@ -196,14 +196,14 @@ async def test_entity_registry_details(hass: HomeAssistant, fake_cloud) -> None:
         "sensor.poele_profile_raw",
         "sensor.poele_frost_protection_raw",
     ):
-        entry = registry.async_get(entity_id)
-        assert entry is not None, entity_id
-        assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+        reg_entry = registry.async_get(entity_id)
+        assert reg_entry is not None, entity_id
+        assert reg_entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
     assert registry.async_get("sensor.poele_flue_fan_speed").entity_category is EntityCategory.DIAGNOSTIC
     assert registry.async_get("switch.poele_sounds").entity_category is EntityCategory.CONFIG
     assert registry.async_get("binary_sensor.poele_mcz_cloud").entity_category is EntityCategory.DIAGNOSTIC
     climate = registry.async_get(CLIMATE_ID)
-    assert climate.unique_id == "1234567890123_climate"
+    assert climate.unique_id == f"{entry.entry_id}_climate"
     assert climate.translation_key == "stove"
 
 

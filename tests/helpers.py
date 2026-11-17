@@ -11,7 +11,7 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.mcz_maestro.api import MaestroCloud
+from custom_components.mcz_maestro.api import MaestroCloud, stove_id
 from custom_components.mcz_maestro.const import CONF_MAC, CONF_SERIAL, CONF_URL, DOMAIN
 
 # Production timings (1 s between commands, refresh 2 s later) shrunk for tests.
@@ -20,7 +20,7 @@ FAST_CLOUD = functools.partial(
 )
 
 SERIAL = "1234567890123"
-MAC = "0A1B2CA137E0"
+MAC = "0A1B2C3D4E5F"
 
 
 async def setup_integration(
@@ -30,7 +30,7 @@ async def setup_integration(
     entry = MockConfigEntry(
         domain=DOMAIN,
         title="Poêle",
-        unique_id=SERIAL,
+        unique_id=stove_id(SERIAL),
         data={CONF_SERIAL: SERIAL, CONF_MAC: MAC, CONF_URL: cloud.url},
         options=options or {},
     )

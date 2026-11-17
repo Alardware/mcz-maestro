@@ -290,7 +290,7 @@ class SocketIOClient:
         try:
             event, *args = json.loads(rest)
         except (ValueError, TypeError):
-            _LOGGER.debug("Ignoring malformed Socket.IO event %r", body[:80])
+            _LOGGER.debug("Ignoring malformed Socket.IO event (%d chars)", len(body))
             return
         if not isinstance(event, str):
             return
