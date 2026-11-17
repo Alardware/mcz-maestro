@@ -310,8 +310,9 @@ class McZMaestroCard extends HTMLElement {
 
   _resolve() {
     const climateId = this._config.entity;
-    if (this._ids && this._idsFor === climateId) return;
     const entities = this._hass.entities || {};
+    if (this._ids && this._idsFor === climateId && this._entitiesRef === entities) return;
+    this._entitiesRef = entities;
     const deviceId = entities[climateId]?.device_id;
     const ids = {};
     if (deviceId) {
@@ -393,6 +394,7 @@ class McZMaestroCard extends HTMLElement {
         this._timer = setTimeout(() => {
           const value = this._pendingSetpoint;
           this._pendingSetpoint = null;
+          this._sentSetpoint = { value, at: Date.now() };
           this._call("climate", "set_temperature", { entity_id: climate, temperature: value }, "sp");
         }, SETPOINT_DEBOUNCE_MS);
         this._render();
@@ -473,8 +475,10 @@ class McZMaestroCard extends HTMLElement {
     const subtitle = unavailable ? this._t("unavailable") : this._fmt(stateObj);
     const alarmOn = this._st("binary_sensor.alarm")?.state === "on";
     const cloud = this._st("binary_sensor.cloud");
+    const sent = this._sentSetpoint;
+    if (sent && (a.temperature === sent.value || Date.now() - sent.at > BUSY_TIMEOUT_MS)) this._sentSetpoint = null;
     const pending = this._pendingSetpoint != null;
-    const setpoint = pending ? this._pendingSetpoint : a.temperature;
+    const setpoint = pending ? this._pendingSetpoint : this._sentSetpoint ? this._sentSetpoint.value : a.temperature;
     const ambient = typeof a.current_temperature === "number" ? a.current_temperature : null;
     const [whole, frac] = ambient == null ? ["—", ""] : this._num(ambient).split(/[.,]/);
     const sep = ambient == null ? "" : this._num(0.5).replace(/[0-9]/g, "");

@@ -85,6 +85,11 @@ def main() -> int:
             calls(page)[-1] == ["climate", "set_temperature", {"entity_id": "climate.poele", "temperature": 20}],
             "setpoint sent once after debounce",
         )
+        page.evaluate(
+            "() => { const h = window.__hass; h.states = {...h.states, 'sensor.poele_fumees': {state: '121', attributes: {unit_of_measurement: '°C'}, last_updated: 'y'}}; window.__card.hass = {...h}; }"
+        )
+        page.wait_for_timeout(50)
+        check(page.locator(f"{card} .sp .v").inner_text().startswith("20,0°"), "sent setpoint kept until the stove confirms")
         page.click(f'{card} [data-a="mode"][data-v="manual"]')
         check(
             calls(page)[-1] == ["climate", "set_preset_mode", {"entity_id": "climate.poele", "preset_mode": "manual"}],
