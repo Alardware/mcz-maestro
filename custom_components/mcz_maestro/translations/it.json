@@ -38,12 +38,25 @@
       "init": {
         "title": "Opzioni",
         "data": {
-          "scan_interval": "Intervallo di aggiornamento (s)"
+          "scan_interval": "Intervallo di aggiornamento (s)",
+          "safety_revert": "Riattiva automaticamente Eco Stop e Dynamic",
+          "safety_delay": "Dopo (minuti)",
+          "safety_overheat": "Protezione surriscaldamento",
+          "overheat_temp": "Soglia ambiente: Eco Stop + Dynamic (°C)",
+          "shutdown_temp": "Soglia ambiente: spegnimento (°C)",
+          "safety_notify": "Notifica quando interviene una sicurezza"
         },
         "data_description": {
-          "scan_interval": "Frequenza con cui si chiedono nuovi dati alla stufa (15–300 s)."
+          "scan_interval": "Frequenza con cui si chiedono nuovi dati alla stufa (15–300 s).",
+          "safety_revert": "Se Eco Stop resta disattivato o la stufa resta in Manuale oltre il ritardo, viene ripristinato.",
+          "safety_delay": "Da 5 a 480 minuti.",
+          "overheat_temp": "Da questa temperatura ambiente, Eco Stop e Dynamic vengono riattivati subito.",
+          "shutdown_temp": "Da questa temperatura ambiente, la stufa viene spenta. Deve superare la soglia precedente."
         }
       }
+    },
+    "error": {
+      "shutdown_below_overheat": "La soglia di spegnimento deve superare la soglia Eco Stop + Dynamic."
     }
   },
   "entity": {
@@ -285,6 +298,21 @@
     },
     "stale": {
       "message": "Nessun dato dalla stufa da {seconds} s."
+    },
+    "safety_title": {
+      "message": "Sicurezza stufa"
+    },
+    "safety_eco_restored": {
+      "message": "Eco Stop era disattivato da {minutes} min: è stato riattivato."
+    },
+    "safety_dynamic_restored": {
+      "message": "La stufa era in Manuale da {minutes} min: ritorno a Dynamic."
+    },
+    "safety_overheat": {
+      "message": "Ambiente a {temperature} °C (soglia {limit} °C): Eco Stop e Dynamic riattivati."
+    },
+    "safety_shutdown": {
+      "message": "Ambiente a {temperature} °C (soglia {limit} °C): stufa spenta."
     }
   }
 }

@@ -167,7 +167,35 @@ def build(i: int) -> dict:
                             "Intervalle de rafraîchissement (s)",
                             "Intervallo di aggiornamento (s)",
                             "Aktualisierungsintervall (s)",
-                        )
+                        ),
+                        "safety_revert": t(
+                            "Turn Eco Stop and Dynamic back on automatically",
+                            "Réactiver automatiquement Eco Stop et Dynamic",
+                            "Riattiva automaticamente Eco Stop e Dynamic",
+                            "Eco Stop und Dynamic automatisch wieder aktivieren",
+                        ),
+                        "safety_delay": t("After (minutes)", "Au bout de (minutes)", "Dopo (minuti)", "Nach (Minuten)"),
+                        "safety_overheat": t(
+                            "Overheat protection", "Protection surchauffe", "Protezione surriscaldamento", "Überhitzungsschutz"
+                        ),
+                        "overheat_temp": t(
+                            "Room limit: Eco Stop + Dynamic (°C)",
+                            "Seuil pièce : Eco Stop + Dynamic (°C)",
+                            "Soglia ambiente: Eco Stop + Dynamic (°C)",
+                            "Raumgrenze: Eco Stop + Dynamic (°C)",
+                        ),
+                        "shutdown_temp": t(
+                            "Room limit: switch off (°C)",
+                            "Seuil pièce : extinction (°C)",
+                            "Soglia ambiente: spegnimento (°C)",
+                            "Raumgrenze: Abschalten (°C)",
+                        ),
+                        "safety_notify": t(
+                            "Notify when a safety steps in",
+                            "Notifier quand une sécurité intervient",
+                            "Notifica quando interviene una sicurezza",
+                            "Benachrichtigen, wenn eine Sicherung eingreift",
+                        ),
                     },
                     "data_description": {
                         "scan_interval": t(
@@ -175,10 +203,37 @@ def build(i: int) -> dict:
                             "Fréquence de demande de nouvelles données au poêle (15–300 s).",
                             "Frequenza con cui si chiedono nuovi dati alla stufa (15–300 s).",
                             "Wie oft der Ofen nach neuen Daten gefragt wird (15–300 s).",
-                        )
+                        ),
+                        "safety_revert": t(
+                            "If Eco Stop stays off or the stove stays in Manual longer than the delay, it is switched back.",
+                            "Si Eco Stop reste coupé ou le poêle reste en Manuel plus longtemps que le délai, il est remis.",
+                            "Se Eco Stop resta disattivato o la stufa resta in Manuale oltre il ritardo, viene ripristinato.",
+                            "Bleibt Eco Stop aus oder der Ofen länger als die Wartezeit auf Manuell, wird zurückgeschaltet.",
+                        ),
+                        "safety_delay": t("5 to 480 minutes.", "De 5 à 480 minutes.", "Da 5 a 480 minuti.", "5 bis 480 Minuten."),
+                        "overheat_temp": t(
+                            "At or above this room temperature, Eco Stop and Dynamic are turned back on at once.",
+                            "À partir de cette température dans la pièce, Eco Stop et Dynamic sont remis tout de suite.",
+                            "Da questa temperatura ambiente, Eco Stop e Dynamic vengono riattivati subito.",
+                            "Ab dieser Raumtemperatur werden Eco Stop und Dynamic sofort wieder aktiviert.",
+                        ),
+                        "shutdown_temp": t(
+                            "At or above this room temperature, the stove is switched off. Must be above the previous limit.",
+                            "À partir de cette température dans la pièce, le poêle est éteint. Doit être au-dessus du seuil précédent.",
+                            "Da questa temperatura ambiente, la stufa viene spenta. Deve superare la soglia precedente.",
+                            "Ab dieser Raumtemperatur wird der Ofen ausgeschaltet. Muss über der vorigen Grenze liegen.",
+                        ),
                     },
                 }
-            }
+            },
+            "error": {
+                "shutdown_below_overheat": t(
+                    "The switch-off limit must be above the Eco Stop + Dynamic limit.",
+                    "Le seuil d'extinction doit être au-dessus du seuil Eco Stop + Dynamic.",
+                    "La soglia di spegnimento deve superare la soglia Eco Stop + Dynamic.",
+                    "Die Abschaltgrenze muss über der Grenze für Eco Stop + Dynamic liegen.",
+                )
+            },
         },
         "entity": {
             "climate": {
@@ -281,6 +336,41 @@ def build(i: int) -> dict:
                     "Aucune donnée du poêle depuis {seconds} s.",
                     "Nessun dato dalla stufa da {seconds} s.",
                     "Seit {seconds} s keine Daten vom Ofen.",
+                )
+            },
+            "safety_title": {
+                "message": t("Stove safety", "Sécurité poêle", "Sicurezza stufa", "Ofen-Sicherheit")
+            },
+            "safety_eco_restored": {
+                "message": t(
+                    "Eco Stop had been off for {minutes} min: turned back on.",
+                    "Eco Stop était coupé depuis {minutes} min : il a été réactivé.",
+                    "Eco Stop era disattivato da {minutes} min: è stato riattivato.",
+                    "Eco Stop war seit {minutes} min aus: wieder aktiviert.",
+                )
+            },
+            "safety_dynamic_restored": {
+                "message": t(
+                    "The stove had been in Manual for {minutes} min: back to Dynamic.",
+                    "Le poêle était en Manuel depuis {minutes} min : retour en Dynamic.",
+                    "La stufa era in Manuale da {minutes} min: ritorno a Dynamic.",
+                    "Der Ofen war seit {minutes} min auf Manuell: zurück auf Dynamic.",
+                )
+            },
+            "safety_overheat": {
+                "message": t(
+                    "Room at {temperature} °C (limit {limit} °C): Eco Stop and Dynamic turned back on.",
+                    "Pièce à {temperature} °C (seuil {limit} °C) : Eco Stop et Dynamic réactivés.",
+                    "Ambiente a {temperature} °C (soglia {limit} °C): Eco Stop e Dynamic riattivati.",
+                    "Raum bei {temperature} °C (Grenze {limit} °C): Eco Stop und Dynamic wieder aktiviert.",
+                )
+            },
+            "safety_shutdown": {
+                "message": t(
+                    "Room at {temperature} °C (limit {limit} °C): stove switched off.",
+                    "Pièce à {temperature} °C (seuil {limit} °C) : poêle éteint.",
+                    "Ambiente a {temperature} °C (soglia {limit} °C): stufa spenta.",
+                    "Raum bei {temperature} °C (Grenze {limit} °C): Ofen ausgeschaltet.",
                 )
             },
         },

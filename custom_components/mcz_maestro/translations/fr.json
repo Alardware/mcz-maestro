@@ -38,12 +38,25 @@
       "init": {
         "title": "Options",
         "data": {
-          "scan_interval": "Intervalle de rafraîchissement (s)"
+          "scan_interval": "Intervalle de rafraîchissement (s)",
+          "safety_revert": "Réactiver automatiquement Eco Stop et Dynamic",
+          "safety_delay": "Au bout de (minutes)",
+          "safety_overheat": "Protection surchauffe",
+          "overheat_temp": "Seuil pièce : Eco Stop + Dynamic (°C)",
+          "shutdown_temp": "Seuil pièce : extinction (°C)",
+          "safety_notify": "Notifier quand une sécurité intervient"
         },
         "data_description": {
-          "scan_interval": "Fréquence de demande de nouvelles données au poêle (15–300 s)."
+          "scan_interval": "Fréquence de demande de nouvelles données au poêle (15–300 s).",
+          "safety_revert": "Si Eco Stop reste coupé ou le poêle reste en Manuel plus longtemps que le délai, il est remis.",
+          "safety_delay": "De 5 à 480 minutes.",
+          "overheat_temp": "À partir de cette température dans la pièce, Eco Stop et Dynamic sont remis tout de suite.",
+          "shutdown_temp": "À partir de cette température dans la pièce, le poêle est éteint. Doit être au-dessus du seuil précédent."
         }
       }
+    },
+    "error": {
+      "shutdown_below_overheat": "Le seuil d'extinction doit être au-dessus du seuil Eco Stop + Dynamic."
     }
   },
   "entity": {
@@ -285,6 +298,21 @@
     },
     "stale": {
       "message": "Aucune donnée du poêle depuis {seconds} s."
+    },
+    "safety_title": {
+      "message": "Sécurité poêle"
+    },
+    "safety_eco_restored": {
+      "message": "Eco Stop était coupé depuis {minutes} min : il a été réactivé."
+    },
+    "safety_dynamic_restored": {
+      "message": "Le poêle était en Manuel depuis {minutes} min : retour en Dynamic."
+    },
+    "safety_overheat": {
+      "message": "Pièce à {temperature} °C (seuil {limit} °C) : Eco Stop et Dynamic réactivés."
+    },
+    "safety_shutdown": {
+      "message": "Pièce à {temperature} °C (seuil {limit} °C) : poêle éteint."
     }
   }
 }

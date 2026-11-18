@@ -21,14 +21,21 @@ from .api import (
 )
 from .const import (
     CONF_MAC,
+    CONF_OVERHEAT_TEMP,
+    CONF_SAFETY_DELAY,
+    CONF_SAFETY_NOTIFY,
+    CONF_SAFETY_OVERHEAT,
+    CONF_SAFETY_REVERT,
     CONF_SCAN_INTERVAL,
     CONF_SERIAL,
+    CONF_SHUTDOWN_TEMP,
     DEFAULT_NAME,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_URL,
     DOMAIN,
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
+    SAFETY_DEFAULTS,
     VALIDATE_TIMEOUT,
 )
 
@@ -124,17 +131,39 @@ class MaestroConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class MaestroOptionsFlow(OptionsFlow):
-    """Refresh interval."""
+    """Refresh interval and safety settings."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        errors: dict[str, str] = {}
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
-        current = self.config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+            if user_input[CONF_SHUTDOWN_TEMP] <= user_input[CONF_OVERHEAT_TEMP]:
+                errors[CONF_SHUTDOWN_TEMP] = "shutdown_below_overheat"
+            else:
+                return self.async_create_entry(data=user_input)
+        values = {
+            CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL,
+            **SAFETY_DEFAULTS,
+            **self.config_entry.options,
+            **(user_input or {}),
+        }
+
+        def req(key: str, validator) -> tuple:
+            return vol.Required(key, default=values[key]), validator
+
         schema = vol.Schema(
-            {
-                vol.Required(CONF_SCAN_INTERVAL, default=current): vol.All(
-                    vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+            dict(
+                (
+                    req(
+                        CONF_SCAN_INTERVAL,
+                        vol.All(vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)),
+                    ),
+                    req(CONF_SAFETY_REVERT, bool),
+                    req(CONF_SAFETY_DELAY, vol.All(vol.Coerce(int), vol.Range(min=5, max=480))),
+                    req(CONF_SAFETY_OVERHEAT, bool),
+                    req(CONF_OVERHEAT_TEMP, vol.All(vol.Coerce(float), vol.Range(min=18, max=40))),
+                    req(CONF_SHUTDOWN_TEMP, vol.All(vol.Coerce(float), vol.Range(min=20, max=45))),
+                    req(CONF_SAFETY_NOTIFY, bool),
                 )
-            }
+            )
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)

@@ -38,12 +38,25 @@
       "init": {
         "title": "Optionen",
         "data": {
-          "scan_interval": "Aktualisierungsintervall (s)"
+          "scan_interval": "Aktualisierungsintervall (s)",
+          "safety_revert": "Eco Stop und Dynamic automatisch wieder aktivieren",
+          "safety_delay": "Nach (Minuten)",
+          "safety_overheat": "Überhitzungsschutz",
+          "overheat_temp": "Raumgrenze: Eco Stop + Dynamic (°C)",
+          "shutdown_temp": "Raumgrenze: Abschalten (°C)",
+          "safety_notify": "Benachrichtigen, wenn eine Sicherung eingreift"
         },
         "data_description": {
-          "scan_interval": "Wie oft der Ofen nach neuen Daten gefragt wird (15–300 s)."
+          "scan_interval": "Wie oft der Ofen nach neuen Daten gefragt wird (15–300 s).",
+          "safety_revert": "Bleibt Eco Stop aus oder der Ofen länger als die Wartezeit auf Manuell, wird zurückgeschaltet.",
+          "safety_delay": "5 bis 480 Minuten.",
+          "overheat_temp": "Ab dieser Raumtemperatur werden Eco Stop und Dynamic sofort wieder aktiviert.",
+          "shutdown_temp": "Ab dieser Raumtemperatur wird der Ofen ausgeschaltet. Muss über der vorigen Grenze liegen."
         }
       }
+    },
+    "error": {
+      "shutdown_below_overheat": "Die Abschaltgrenze muss über der Grenze für Eco Stop + Dynamic liegen."
     }
   },
   "entity": {
@@ -285,6 +298,21 @@
     },
     "stale": {
       "message": "Seit {seconds} s keine Daten vom Ofen."
+    },
+    "safety_title": {
+      "message": "Ofen-Sicherheit"
+    },
+    "safety_eco_restored": {
+      "message": "Eco Stop war seit {minutes} min aus: wieder aktiviert."
+    },
+    "safety_dynamic_restored": {
+      "message": "Der Ofen war seit {minutes} min auf Manuell: zurück auf Dynamic."
+    },
+    "safety_overheat": {
+      "message": "Raum bei {temperature} °C (Grenze {limit} °C): Eco Stop und Dynamic wieder aktiviert."
+    },
+    "safety_shutdown": {
+      "message": "Raum bei {temperature} °C (Grenze {limit} °C): Ofen ausgeschaltet."
     }
   }
 }

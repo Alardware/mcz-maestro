@@ -16,6 +16,7 @@ from custom_components.mcz_maestro.const import (
     CONF_SCAN_INTERVAL,
     CONF_SERIAL,
     DOMAIN,
+    SAFETY_DEFAULTS,
 )
 
 pytestmark = pytest.mark.usefixtures("enable_custom_integrations")
@@ -111,7 +112,9 @@ async def test_options_flow(hass: HomeAssistant) -> None:
         result["flow_id"], {CONF_SCAN_INTERVAL: 60}
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert entry.options == {CONF_SCAN_INTERVAL: 60}
+    assert entry.options[CONF_SCAN_INTERVAL] == 60
+    # Safety settings are saved with their defaults: on, 60 min, 27 / 30 °C.
+    assert {k: entry.options[k] for k in SAFETY_DEFAULTS} == SAFETY_DEFAULTS
 
 
 async def test_options_flow_rejects_out_of_range(hass: HomeAssistant) -> None:

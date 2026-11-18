@@ -38,12 +38,25 @@
       "init": {
         "title": "Options",
         "data": {
-          "scan_interval": "Refresh interval (s)"
+          "scan_interval": "Refresh interval (s)",
+          "safety_revert": "Turn Eco Stop and Dynamic back on automatically",
+          "safety_delay": "After (minutes)",
+          "safety_overheat": "Overheat protection",
+          "overheat_temp": "Room limit: Eco Stop + Dynamic (°C)",
+          "shutdown_temp": "Room limit: switch off (°C)",
+          "safety_notify": "Notify when a safety steps in"
         },
         "data_description": {
-          "scan_interval": "How often the stove is asked for fresh data (15–300 s)."
+          "scan_interval": "How often the stove is asked for fresh data (15–300 s).",
+          "safety_revert": "If Eco Stop stays off or the stove stays in Manual longer than the delay, it is switched back.",
+          "safety_delay": "5 to 480 minutes.",
+          "overheat_temp": "At or above this room temperature, Eco Stop and Dynamic are turned back on at once.",
+          "shutdown_temp": "At or above this room temperature, the stove is switched off. Must be above the previous limit."
         }
       }
+    },
+    "error": {
+      "shutdown_below_overheat": "The switch-off limit must be above the Eco Stop + Dynamic limit."
     }
   },
   "entity": {
@@ -285,6 +298,21 @@
     },
     "stale": {
       "message": "No data from the stove for {seconds} s."
+    },
+    "safety_title": {
+      "message": "Stove safety"
+    },
+    "safety_eco_restored": {
+      "message": "Eco Stop had been off for {minutes} min: turned back on."
+    },
+    "safety_dynamic_restored": {
+      "message": "The stove had been in Manual for {minutes} min: back to Dynamic."
+    },
+    "safety_overheat": {
+      "message": "Room at {temperature} °C (limit {limit} °C): Eco Stop and Dynamic turned back on."
+    },
+    "safety_shutdown": {
+      "message": "Room at {temperature} °C (limit {limit} °C): stove switched off."
     }
   }
 }

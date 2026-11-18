@@ -30,5 +30,25 @@ FIRST_FRAME_TIMEOUT: Final = 30
 PARAMS_INTERVAL: Final = 3600
 
 EVENT_ALARM: Final = f"{DOMAIN}_alarm"
+EVENT_SAFETY: Final = f"{DOMAIN}_safety"
+
+# Safety options (see safety.py). Enabled by default.
+CONF_SAFETY_REVERT: Final = "safety_revert"
+CONF_SAFETY_DELAY: Final = "safety_delay"
+CONF_SAFETY_OVERHEAT: Final = "safety_overheat"
+CONF_OVERHEAT_TEMP: Final = "overheat_temp"
+CONF_SHUTDOWN_TEMP: Final = "shutdown_temp"
+CONF_SAFETY_NOTIFY: Final = "safety_notify"
+DEFAULT_SAFETY_DELAY: Final = 60  # minutes
+DEFAULT_OVERHEAT_TEMP: Final = 27.0
+DEFAULT_SHUTDOWN_TEMP: Final = 30.0
+SAFETY_DEFAULTS: Final = {
+    CONF_SAFETY_REVERT: True,
+    CONF_SAFETY_DELAY: DEFAULT_SAFETY_DELAY,
+    CONF_SAFETY_OVERHEAT: True,
+    CONF_OVERHEAT_TEMP: DEFAULT_OVERHEAT_TEMP,
+    CONF_SHUTDOWN_TEMP: DEFAULT_SHUTDOWN_TEMP,
+    CONF_SAFETY_NOTIFY: True,
+}
 
 CARD_URL: Final = f"/{DOMAIN}/mcz-maestro-card.js"

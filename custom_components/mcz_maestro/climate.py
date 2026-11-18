@@ -51,6 +51,7 @@ class MaestroClimate(MaestroEntity, ClimateEntity):
     _attr_target_temperature_step = 0.5
     _attr_min_temp = 5
     _attr_max_temp = 35
+    _unrecorded_attributes = frozenset({"eco_stop_restore_at", "dynamic_restore_at"})
 
     def __init__(self, coordinator: MaestroCoordinator) -> None:
         super().__init__(coordinator, "climate")
@@ -62,6 +63,12 @@ class MaestroClimate(MaestroEntity, ClimateEntity):
     @property
     def target_temperature(self) -> float | None:
         return self.state_data.setpoint
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """When the safety will turn Eco Stop / Dynamic back on (None: nothing pending)."""
+        eco, dynamic = self.coordinator.safety_restore_times()
+        return {"eco_stop_restore_at": eco, "dynamic_restore_at": dynamic}
 
     @property
     def hvac_mode(self) -> HVACMode:
