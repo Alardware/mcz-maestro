@@ -22,6 +22,7 @@ première génération** : ceux qu'on pilote avec l'ancienne appli « MCZ Maestr
 - Suit la langue de Home Assistant : entités, carte et alertes en français, anglais,
   italien ou allemand (anglais pour les autres langues).
 - Icône propre dans la liste des intégrations (Home Assistant 2026.3+).
+- **Sécurités** contre la surchauffe et le gaspillage de granulés (voir plus bas).
 
 Projet communautaire, sans lien avec MCZ.
 
@@ -88,9 +89,29 @@ automation:
           message: "{{ trigger.event.data.label }}"
 ```
 
+## Sécurités
+
+Actives par défaut, réglables dans **Configurer** sur l'intégration :
+
+| Sécurité | Ce qu'elle fait | Défaut |
+|---|---|---|
+| Retour automatique | Eco Stop coupé depuis plus de N min → réactivé. Mode Manuel depuis plus de N min → retour en Dynamic. | 60 min |
+| Seuil surchauffe | Pièce au-dessus du seuil, poêle en marche → Eco Stop et Dynamic réactivés **immédiatement**. | 27 °C |
+| Seuil d'extinction | Pièce au-dessus du seuil, poêle en marche → **poêle éteint**. | 30 °C |
+| Notification | Notification Home Assistant à chaque intervention, avec la raison. | activée |
+
+- Chaque intervention déclenche aussi l'événement `mcz_maestro_safety`
+  (`action`, `label`, `temperature`, `device_id`) pour vos automatisations.
+- Le thermostat expose `eco_stop_restore_at` et `dynamic_restore_at` : l'heure du retour
+  automatique prévu. La carte l'affiche (« Retour en Dynamic à 15:42 »).
+- La carte demande une **confirmation** avant de passer en Manuel ou de couper Eco Stop.
+- Une même action n'est jamais répétée avant 5 min.
+- Le décompte repart de zéro après un redémarrage de Home Assistant ou un changement d'options.
+- La température utilisée est celle que mesure le poêle (sa sonde ambiante).
+
 ## Options
 
-**Configurer** sur l'intégration : intervalle de rafraîchissement (15–300 s, 30 par défaut).
+**Configurer** sur l'intégration : intervalle de rafraîchissement (15–300 s, 30 par défaut) et sécurités (voir ci-dessus).
 **Reconfigurer** : changer l'adresse MAC remote (module Wi-Fi remplacé).
 
 ## Dépannage

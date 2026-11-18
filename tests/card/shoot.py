@@ -92,10 +92,18 @@ def main() -> int:
         )
         page.wait_for_timeout(50)
         check(page.locator(f"{card} .sp .v").inner_text().startswith("20,0°"), "sent setpoint kept until the stove confirms")
+        n = len(calls(page))
         page.click(f'{card} [data-a="mode"][data-v="manual"]')
+        check(len(calls(page)) == n, "Manual asks for confirmation first (no call yet)")
+        check("sans suivre la température" in page.locator(f"{card} .confirm").inner_text(), "Manual confirmation text")
+        page.locator(f"{card} .ctl").screenshot(path=str(OUT / "dark-confirm-manual.png"))
+        page.click(f'{card} [data-a="confirm-no"]')
+        check(page.locator(f"{card} .confirm").count() == 0 and len(calls(page)) == n, "Cancel closes it, nothing sent")
+        page.click(f'{card} [data-a="mode"][data-v="manual"]')
+        page.click(f'{card} [data-a="confirm-yes"]')
         check(
             calls(page)[-1] == ["climate", "set_preset_mode", {"entity_id": "climate.poele", "preset_mode": "manual"}],
-            "mode switch to manual",
+            "Confirm switches to Manual",
         )
         n = len(calls(page))
         page.click(f'{card} [data-a="level"][data-v="2"]', force=True)
@@ -110,8 +118,11 @@ def main() -> int:
             calls(page)[-1] == ["fan", "set_preset_mode", {"entity_id": "fan.poele_ventilateur", "preset_mode": "auto"}],
             "fan auto",
         )
+        n = len(calls(page))
         page.click(f'{card} [data-a="toggle"][data-v="switch.eco"]')
-        check(calls(page)[-1] == ["switch", "toggle", {"entity_id": "switch.poele_eco"}], "eco chip toggles")
+        check(len(calls(page)) == n, "Eco Stop off asks for confirmation first")
+        page.click(f'{card} [data-a="confirm-yes"]')
+        check(calls(page)[-1] == ["switch", "turn_off", {"entity_id": "switch.poele_eco"}], "Confirm turns Eco Stop off")
         check(page.locator(f'{card} [data-a="toggle"][data-v="switch.eco"].busy').count() == 1, "chip shows busy state")
         page.evaluate(
             "() => { const h = window.__hass; h.states = {...h.states, 'switch.poele_eco': {state: 'off', attributes: {}, last_updated: 'x'}}; window.__card.hass = {...h}; }"
@@ -129,6 +140,11 @@ def main() -> int:
         )
         check(page.locator(f'{card} [data-a="sp"]').first.is_disabled(), "setpoint disabled in Manual")
         check(page.locator(f'{card} [data-a="fan"][data-v="3"]').get_attribute("aria-pressed") == "true", "fan 3 shown")
+        hints = page.locator(f"{card} .hint").all_inner_texts()
+        check(any(h.startswith("Retour en Dynamic à") for h in hints), f"Dynamic restore time shown {hints}")
+        check(any(h.startswith("Eco Stop réactivé à") for h in hints), "Eco Stop restore time shown")
+        page.click(f'{card} [data-a="toggle"][data-v="switch.eco"]')
+        check(calls(page)[-1] == ["switch", "turn_on", {"entity_id": "switch.poele_eco"}], "Eco Stop on needs no confirmation")
         page.close()
 
         page, _ = open_card(browser, "alarm")

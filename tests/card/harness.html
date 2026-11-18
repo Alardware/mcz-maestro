@@ -54,6 +54,8 @@ function build(s) {
   };
   if (s === "manual") {
     base.climate.attributes.preset_mode = "manual";
+    base.climate.attributes.dynamic_restore_at = "2026-11-18T15:42:00+00:00";
+    base.climate.attributes.eco_stop_restore_at = "2026-11-18T15:20:00+00:00";
     base.climate.attributes.current_temperature = 20.5;
     base.state = "power_3"; base.level = "3";
     base.fan = { state: "on", attributes: { preset_mode: null, percentage: 60 } };

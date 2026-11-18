@@ -22,6 +22,7 @@ module: the ones controlled with the legacy "MCZ Maestro" app, paired with a
 - Follows Home Assistant's language: entities, card and alerts in English, French, Italian
   or German (English for other languages).
 - Its own icon in the integrations list (Home Assistant 2026.3+).
+- **Safeties** against overheating and wasted pellets (see below).
 
 Community project, not affiliated with MCZ.
 
@@ -88,9 +89,29 @@ automation:
           message: "{{ trigger.event.data.label }}"
 ```
 
+## Safeties
+
+On by default, adjustable under **Configure** on the integration:
+
+| Safety | What it does | Default |
+|---|---|---|
+| Automatic restore | Eco Stop off for more than N min → turned back on. Manual mode for more than N min → back to Dynamic. | 60 min |
+| Overheat limit | Room above the limit while the stove runs → Eco Stop and Dynamic turned back on **at once**. | 27 °C |
+| Switch-off limit | Room above the limit while the stove runs → **stove switched off**. | 30 °C |
+| Notification | Home Assistant notification for every intervention, with the reason. | on |
+
+- Every intervention also fires the `mcz_maestro_safety` event
+  (`action`, `label`, `temperature`, `device_id`) for your automations.
+- The thermostat exposes `eco_stop_restore_at` and `dynamic_restore_at`: when the automatic
+  restore is due. The card shows it ("Back to Dynamic at 15:42").
+- The card asks for **confirmation** before switching to Manual or turning Eco Stop off.
+- The same action is never repeated within 5 minutes.
+- The countdown restarts after a Home Assistant restart or an options change.
+- The temperature used is the one measured by the stove (its room probe).
+
 ## Options
 
-**Configure** on the integration: refresh interval (15–300 s, default 30).
+**Configure** on the integration: refresh interval (15–300 s, default 30) and safeties (see above).
 **Reconfigure**: change the remote MAC address (Wi-Fi module replaced).
 
 ## Troubleshooting

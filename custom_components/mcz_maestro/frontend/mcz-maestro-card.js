@@ -2,7 +2,7 @@
  * mcz-maestro-card — Lovelace card for the MCZ Maestro (legacy app) integration.
  * Vanilla web component, no external dependency. Served by the integration.
  */
-const CARD_VERSION = "0.1.4";
+const CARD_VERSION = "0.2.0";
 const DOMAIN = "mcz_maestro";
 const SCALE_MIN = 10;
 const SCALE_MAX = 30;
@@ -44,6 +44,12 @@ const I18N = {
     editor_entity: "Poêle (entité climate)",
     editor_name: "Nom affiché",
     card_description: "Poêle à granulés MCZ Maestro (cloud, ancienne appli)",
+    confirm_manual: "Passer en Manuel ? Le poêle chauffera sans suivre la température.",
+    confirm_eco_off: "Couper Eco Stop ? Le poêle ne s'arrêtera plus une fois la consigne atteinte.",
+    confirm: "Confirmer",
+    cancel: "Annuler",
+    revert_dynamic: "Retour en Dynamic à {time}",
+    revert_eco: "Eco Stop réactivé à {time}",
   },
   en: {
     setpoint: "Setpoint",
@@ -79,6 +85,12 @@ const I18N = {
     editor_entity: "Stove (climate entity)",
     editor_name: "Display name",
     card_description: "MCZ Maestro pellet stove (cloud, legacy app)",
+    confirm_manual: "Switch to Manual? The stove will heat without following the temperature.",
+    confirm_eco_off: "Turn Eco Stop off? The stove will no longer stop once the setpoint is reached.",
+    confirm: "Confirm",
+    cancel: "Cancel",
+    revert_dynamic: "Back to Dynamic at {time}",
+    revert_eco: "Eco Stop back on at {time}",
   },
   it: {
     setpoint: "Temperatura",
@@ -114,6 +126,12 @@ const I18N = {
     editor_entity: "Stufa (entità climate)",
     editor_name: "Nome visualizzato",
     card_description: "Stufa a pellet MCZ Maestro (cloud, vecchia app)",
+    confirm_manual: "Passare a Manuale? La stufa scalderà senza seguire la temperatura.",
+    confirm_eco_off: "Disattivare Eco Stop? La stufa non si fermerà più al raggiungimento della temperatura.",
+    confirm: "Conferma",
+    cancel: "Annulla",
+    revert_dynamic: "Ritorno a Dynamic alle {time}",
+    revert_eco: "Eco Stop riattivato alle {time}",
   },
   de: {
     setpoint: "Soll",
@@ -149,6 +167,12 @@ const I18N = {
     editor_entity: "Ofen (Climate-Entität)",
     editor_name: "Anzeigename",
     card_description: "MCZ-Maestro-Pelletofen (Cloud, alte App)",
+    confirm_manual: "Auf Manuell umschalten? Der Ofen heizt dann ohne Temperaturregelung.",
+    confirm_eco_off: "Eco Stop ausschalten? Der Ofen schaltet bei erreichter Solltemperatur nicht mehr ab.",
+    confirm: "Bestätigen",
+    cancel: "Abbrechen",
+    revert_dynamic: "Zurück zu Dynamic um {time}",
+    revert_eco: "Eco Stop wieder an um {time}",
   },
 };
 
@@ -170,6 +194,7 @@ const ICONS = {
   mute:
     '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 4.5 5"/><path d="m20.5 9.5-4.5 5"/>',
   chevron: '<path d="m6 9 6 6 6-6"/>',
+  shield: '<path d="M12 3 5 6v5c0 4.5 3 8.2 7 9.5 4-1.3 7-5 7-9.5V6Z"/><path d="m9 12 2 2 4-4"/>',
   alert:
     '<path d="M12 4 2.8 19.5h18.4Z"/><path d="M12 10v4.2"/><path d="M12 17.1v.1"/>',
   cloud_off:
@@ -335,6 +360,13 @@ button[disabled] { cursor: default; }
 .chip[aria-pressed="true"] { background: color-mix(in srgb, var(--_accent) 18%, transparent); color: var(--_text); }
 .chip[aria-pressed="true"] .ic { color: var(--_accent); }
 .busy { animation: pulse 1.1s ease-in-out infinite; }
+.hint { display: flex; align-items: center; gap: 6px; margin: 8px 2px 0; font-size: 12.5px; color: var(--_muted); }
+.hint .ic { width: 16px; height: 16px; color: var(--_accent); }
+.confirm { margin-top: 10px; padding: 12px; border-radius: 14px; background: color-mix(in srgb, var(--_accent) 14%, transparent); font-size: 13.5px; line-height: 1.4; }
+.confirm .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.confirm button { height: 38px; padding: 0 16px; border-radius: 10px; font-weight: 600; font-size: 13.5px; }
+.confirm .yes { background: var(--_accent); color: #fff; }
+.confirm .no { background: var(--_surface-2); }
 
 details { border-top: 1px solid var(--_line); margin-top: 4px; }
 summary { list-style: none; display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 14px 2px 2px; font-size: 13px; font-weight: 600; color: var(--_muted); }
@@ -366,6 +398,8 @@ class McZMaestroCard extends HTMLElement {
     this._pendingSetpoint = null;
     this._timer = null;
     this._infoOpen = false;
+    this._confirm = null;
+    this._confirmTimer = null;
     this.shadowRoot.addEventListener("click", (ev) => this._onClick(ev));
     this.shadowRoot.addEventListener("toggle", (ev) => {
       if (ev.target.tagName === "DETAILS") this._infoOpen = ev.target.open;
@@ -472,6 +506,35 @@ class McZMaestroCard extends HTMLElement {
     return this._hass.callService(domain, service, data);
   }
 
+  _ask(kind) {
+    this._confirm = kind;
+    clearTimeout(this._confirmTimer);
+    this._confirmTimer = setTimeout(() => {
+      this._confirm = null;
+      this._render();
+    }, 10000);
+    this._render();
+  }
+
+  _time(iso) {
+    if (!iso) return "";
+    const lang = this._hass?.locale?.language || this._hass?.language || "en";
+    return new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+  }
+
+  _confirmBlock(kind) {
+    if (this._confirm !== kind) return "";
+    const text = this._t(kind === "manual" ? "confirm_manual" : "confirm_eco_off");
+    return `<div class="confirm" role="alertdialog" aria-label="${esc(text)}">${esc(text)}
+      <div class="row"><button class="no" data-a="confirm-no">${esc(this._t("cancel"))}</button>
+      <button class="yes" data-a="confirm-yes">${esc(this._t("confirm"))}</button></div></div>`;
+  }
+
+  _hint(key, iso) {
+    if (!iso) return "";
+    return `<div class="hint">${icon("shield")}<span>${esc(this._t(key).replace("{time}", this._time(iso)))}</span></div>`;
+  }
+
   _isBusy(key) {
     return this._busy.has(key) ? " busy" : "";
   }
@@ -507,6 +570,10 @@ class McZMaestroCard extends HTMLElement {
         break;
       }
       case "mode":
+        if (v === "manual" && this._st("climate")?.attributes?.preset_mode !== "manual") {
+          this._ask("manual");
+          break;
+        }
         this._call("climate", "set_preset_mode", { entity_id: climate, preset_mode: v }, "mode");
         break;
       case "level":
@@ -519,7 +586,28 @@ class McZMaestroCard extends HTMLElement {
         break;
       }
       case "toggle":
+        if (v === "switch.eco") {
+          if (this._st("switch.eco")?.state === "on") this._ask("eco_off");
+          else this._call("switch", "turn_on", { entity_id: this._ids[v] }, v);
+          break;
+        }
         this._call("switch", "toggle", { entity_id: this._ids[v] }, v);
+        break;
+      case "confirm-yes": {
+        const kind = this._confirm;
+        this._confirm = null;
+        clearTimeout(this._confirmTimer);
+        if (kind === "manual") {
+          this._call("climate", "set_preset_mode", { entity_id: climate, preset_mode: "manual" }, "mode");
+        } else if (kind === "eco_off") {
+          this._call("switch", "turn_off", { entity_id: this._ids["switch.eco"] }, "switch.eco");
+        }
+        break;
+      }
+      case "confirm-no":
+        this._confirm = null;
+        clearTimeout(this._confirmTimer);
+        this._render();
         break;
       case "reset":
         this._call("button", "press", { entity_id: this._ids["button.reset_alarm"] }, "reset");
@@ -652,6 +740,7 @@ class McZMaestroCard extends HTMLElement {
               <button data-a="mode" data-v="dynamic" aria-pressed="${dynamic}">${icon("auto")}${esc(this._t("dynamic"))}</button>
               <button data-a="mode" data-v="manual" aria-pressed="${!dynamic}">${icon("hand")}${esc(this._t("manual"))}</button>
             </div>
+            ${this._confirmBlock("manual")}${this._hint("revert_dynamic", a.dynamic_restore_at)}
             <div>
               <div class="row-h"><b>${esc(this._t("power"))}</b><span>${esc(dynamic ? this._t("power_auto") : power ? `${power} / 5` : "")}</span></div>
               <div class="bars ${dynamic ? "ro" : ""}${this._isBusy("level")}">${bars}</div>
@@ -662,6 +751,7 @@ class McZMaestroCard extends HTMLElement {
               ${chip("switch.chrono", "clock", "chrono")}
               ${chip("switch.silent", "mute", "silent")}
             </div>
+            ${this._confirmBlock("eco_off")}${this._hint("revert_eco", a.eco_stop_restore_at)}
           </div>
         </div>
         ${tiles ? `<details ${this._infoOpen ? "open" : ""}><summary>${esc(this._t("info"))}${icon("chevron")}</summary><div class="grid">${tiles}</div></details>` : ""}
